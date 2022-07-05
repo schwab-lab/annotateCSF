@@ -26,7 +26,7 @@ from tkinter.colorchooser import askcolor
 
 # root for main widget
 root = Tk()
-root.iconbitmap(os.path.join(sys._MEIPASS, "files/icon3.ico"))
+root.iconbitmap("files/icon3.ico")
 root.title('annotate CSF')
 
 def welcome_statement():
