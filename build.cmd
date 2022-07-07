@@ -5,6 +5,11 @@ echo "============================="
 echo "(Please check that Python 3.9 is installed!)"
 echo.
 
+echo "Preparing data"
+echo "--------------"
+python unzip.py -d files/ref2.h5ad.gz
+powershell -command " (New-Object Net.WebClient).DownloadFile('https://zenodo.org/record/6795112/files/matrix.mtx?download=1', 'test_data\10x_csf\matrix.mtx') "
+
 echo "Creating virtul environment"
 echo "---------------------------"
 python -m venv env
@@ -14,11 +19,6 @@ echo "Installing dependencies"
 echo "-----------------------"
 pip install --no-cache-dir -r requirements_win.txt
 pip install --no-cache-dir torch==1.9.1+cu111
-
-echo "Preparing data"
-echo "--------------"
-python unzip.py -d files/ref2.h5ad.gz
-powershell -command " (New-Object Net.WebClient).DownloadFile('https://zenodo.org/record/6795112/files/matrix.mtx?download=1', 'test_data\10x_csf\matrix.mtx') "
 
 echo "Launching annotateCSF"
 echo "---------------------"
