@@ -35,7 +35,7 @@ pip --no-cache-dir install pyinstaller==5.0.1
 
 echo "Compiling distributable version"
 echo "-------------------------------"
-pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy annotateCSF.py
+pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --hidden-import PIL --hidden-import PIL._imagingtk --hidden-import PIL._tkinter_finder --add-data="env/lib/python3.9/site-packages/numpy.libs/*:numpy.libs" --add-data="env/lib/python3.9/site-packages/scipy.libs/*:scipy.libs" --add-data="env/lib/python3.9/site-packages/Pillow.libs/*:Pillow.libs" --add-data="env/lib/python3.9/site-packages/h5py.libs/*:h5py.libs" --add-data="files/*:files" annotateCSF.py
 
 echo "Launching distributable version"
 echo "-------------------------------"

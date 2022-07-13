@@ -1,0 +1,7 @@
+.git/*
+build/*
+dist/*
+env*/*
+test_data/*
+.gitignore
+.dockerignore
