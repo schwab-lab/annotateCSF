@@ -1,6 +1,7 @@
 .git/*
 build/*
 dist/*
+output/*
 env*/*
 test_data/*
 .gitignore
