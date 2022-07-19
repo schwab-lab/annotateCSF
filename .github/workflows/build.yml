@@ -1,0 +1,59 @@
+name: Build installers for all operating systems
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  release:
+    types: [ created ]
+
+jobs:
+  macos:
+    name: Build for MacOS
+    runs-on: macos-12
+
+    steps:    
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+
+    - name: Prepare data
+      run: |
+        gzip -d ${{ github.workspace }}/files/ref2.h5ad.gz
+
+    - name: Install system packages
+      run: |
+        brew install python@3.9 python-tk@3.9
+
+    - name: Install Python dependencies
+      run: |
+        pip3 install --no-cache-dir -r requirements_linux.txt
+#        pip3 install --no-cache-dir torch==1.9.1+cu111
+
+    - name: Install pyInstaller
+      run: |
+        pip3 install --no-cache-dir pyinstaller==5.0.1
+
+    - name: Build installer
+      run: |
+        cd ${{ github.workspace }}
+        pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --add-data="files/*:files" annotateCSF.py
+
+    - name: Create zip archive
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        cd ${{ github.workspace }}/dist
+        zip -9 -r ${{ github.workspace }}/annotateCSF_MacOS_${{ github.event.release.tag_name }}.zip *
+
+    - name: Upload release binaries
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ${{ github.workspace }}/annotateCSF_MacOS_${{ github.event.release.tag_name }}.zip
+
+    - name: Test installer
+      run: |
+        cd ${{ github.workspace }}/dist/run_aCSF
+        ./run_aCSF

@@ -31,7 +31,7 @@ python annotateCSF.py
 
 echo "Installing pyInstaller"
 echo "----------------------"
-pip --no-cache-dir install pyinstaller==5.0.1
+pip install --no-cache-dir pyinstaller==5.0.1
 
 echo "Compiling distributable version"
 echo "-------------------------------"

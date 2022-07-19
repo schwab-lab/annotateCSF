@@ -26,7 +26,7 @@ from tkinter.colorchooser import askcolor
 
 # root for main widget
 root = Tk()
-root.iconbitmap("files/icon3.ico")
+#root.iconbitmap("files/icon3.ico")
 root.title('annotate CSF')
 
 def welcome_statement():
@@ -579,20 +579,29 @@ def load_user_adata():
 
     # normalization for HVG calculation
     print(colored('Preprocessing and QC...', 'red'))
+    print('DEBUG: normalization 1')
     sc.pp.normalize_total(adata, target_sum=1e4, exclude_highly_expressed = True)
+    print('DEBUG: normalization 2')
     sc.pp.log1p(adata)
+    print('DEBUG: normalization 3')
     adata.raw = adata
+    print('DEBUG: normalization 4')
 
     # QC vars
+    print('DEBUG: QC 1')
     adata.var['mt'] = adata.var_names.str.startswith('MT-')
+    print('DEBUG: QC 2')
     adata.var['rp'] = adata.var_names.str.startswith('RPS', 'RPL')
+    print('DEBUG: QC 3')
     sc.pp.calculate_qc_metrics(adata, qc_vars=['mt', 'rp'], percent_top=None, inplace=True)
+    print('DEBUG: QC 4')
 
     # ask thresholds
     print(colored('Type threshold for QC variables...', 'yellow'))
     ask_threshs()
 
     # make QC plots
+    print('DEBUG: Make QC plots...')
     plt.rcParams['figure.figsize'] = 8,8
     fig, axes = plt.subplots(2,2)
     sns.violinplot(data=adata.obs, x="condition", y="total_counts", ax=axes[0,0])
@@ -600,7 +609,9 @@ def load_user_adata():
     sns.violinplot(data=adata.obs, x="condition", y="n_genes_by_counts", ax=axes[1,0])
     sns.violinplot(data=adata.obs, x="condition", y="pct_counts_mt", ax=axes[1,1])
     plt.tight_layout()
+    print('DEBUG: Make QC plots SHOW')
     plt.show()
+    print('DEBUG: Make QC plots finished')
 
     #sc.pl.violin(adata, keys=['log1p_n_genes_by_counts', 'log1p_total_counts', 'pct_counts_mt'])
     adata = adata[(adata.obs.total_counts > count_thresh.get()) & (adata.obs.n_genes_by_counts > feat_thresh.get()) & (adata.obs.pct_counts_mt < mt_thresh.get())]
