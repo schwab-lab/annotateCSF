@@ -1,10 +1,6 @@
 name: Build installers for all operating systems
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
   release:
     types: [ created ]
 
