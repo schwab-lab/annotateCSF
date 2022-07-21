@@ -46,6 +46,7 @@ docker run -it -v ${PWD}/test_data:/home/dockeruser/test_data -e USERNAME=docker
 # For MacOS:
 # ----------
 brew install socat
+brek cask install docker
 brew cask install xquartz
 open -a XQuartz
 
