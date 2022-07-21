@@ -3,7 +3,12 @@ echo "============================="
 
 echo "Installing required packages"
 echo "----------------------------"
-brew install python@3.9 python-tk@3.9
+sudo brew install python@3.9 python-tk@3.9
+
+echo "Preparing data"
+echo "--------------"
+gzip -d files/ref2.h5ad.gz
+wget 'https://zenodo.org/record/6795112/files/matrix.mtx?download=1' -O 'test_data\10x_csf\matrix.mtx' 
 
 echo "Creating virtul environment"
 echo "---------------------------"

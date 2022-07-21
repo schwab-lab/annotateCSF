@@ -9,6 +9,120 @@ on:
     types: [ created ]
 
 jobs:
+  linux:
+    name: Build for Linux
+    runs-on: ubuntu-20.04
+
+    steps:    
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+
+    - name: Prepare data
+      run: |
+        gzip -d ${{ github.workspace }}/files/ref2.h5ad.gz
+
+    - name: Install system packages
+      run: |
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt-get update
+        sudo apt-get install python3.9 python3.9-tk python3.9-venv python3.9-dev pip  # virtualenv
+
+    - name: Create virtul environment
+      run: |
+        python3.9 -m venv ${{ github.workspace }}/env
+        source ${{ github.workspace }}/env/bin/activate
+
+    - name: Install Python dependencies
+      run: |
+        source ${{ github.workspace }}/env/bin/activate
+        pip install --no-cache-dir -r requirements_linux.txt
+#        pip install --no-cache-dir torch==1.9.1+cu111
+
+    - name: Install pyInstaller
+      run: |
+        source ${{ github.workspace }}/env/bin/activate
+        pip install --no-cache-dir pyinstaller==5.0.1
+
+    - name: Build installer
+      run: |
+        cd ${{ github.workspace }}
+        source env/bin/activate
+        pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --hidden-import PIL --hidden-import PIL._imagingtk --hidden-import PIL._tkinter_finder --add-data="env/lib/python3.9/site-packages/numpy.libs/*:numpy.libs" --add-data="env/lib/python3.9/site-packages/scipy.libs/*:scipy.libs" --add-data="env/lib/python3.9/site-packages/Pillow.libs/*:Pillow.libs" --add-data="env/lib/python3.9/site-packages/h5py.libs/*:h5py.libs" --add-data="files/*:files" annotateCSF.py
+
+    - name: Create zip archive
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        cd ${{ github.workspace }}/dist
+        zip -9 -r ${{ github.workspace }}/annotateCSF_Linux_${{ github.event.release.tag_name }}.zip *
+
+    - name: Upload release binaries
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ${{ github.workspace }}/annotateCSF_Linux_${{ github.event.release.tag_name }}.zip
+
+    - name: Test installer
+      run: |
+        cd ${{ github.workspace }}/dist/run_aCSF
+#        ./run_aCSF
+
+
+  windows:
+    name: Build for Windows
+    runs-on: windows-2022
+
+    steps:    
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+
+    - name: Prepare data
+      run: |
+        python ${{ github.workspace }}/unzip.py -d ${{ github.workspace }}/files/ref2.h5ad.gz
+
+    - name: Prepare data
+      run: |
+        python -m venv ${{ github.workspace }}/env
+        ${{ github.workspace }}/env/Scripts/activate.bat
+
+    - name: Install Python dependencies
+      run: |
+        ${{ github.workspace }}/env/Scripts/activate.bat
+        pip install --no-cache-dir -r requirements_win.txt
+#        pip install --no-cache-dir torch==1.9.1+cu111
+
+    - name: Install pyInstaller
+      run: |
+        ${{ github.workspace }}/env/Scripts/activate.bat
+        pip install --no-cache-dir pyinstaller==5.0.1
+
+    - name: Build installer
+      run: |
+        cd ${{ github.workspace }}
+        ${{ github.workspace }}/env/Scripts/activate.bat
+        pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --add-data="C:/hostedtoolcache/windows/Python/3.9.13/x64/lib/site-packages/tables.libs/*;./tables.libs" --add-data="files/*;files" --icon="files/icon3.ico" annotateCSF.py
+
+    - name: Create zip archive
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        cd ${{ github.workspace }}/dist
+        Compress-Archive -Path * -DestinationPath ${{ github.workspace }}/annotateCSF_Win_${{ github.event.release.tag_name }}.zip
+
+    - name: Upload release binaries
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ${{ github.workspace }}/annotateCSF_Win_${{ github.event.release.tag_name }}.zip
+
+    - name: Test installer
+      run: |
+        cd ${{ github.workspace }}/dist/run_aCSF
+#        ./run_aCSF
+
+
   macos:
     name: Build for MacOS
     runs-on: macos-12
@@ -56,4 +170,4 @@ jobs:
     - name: Test installer
       run: |
         cd ${{ github.workspace }}/dist/run_aCSF
-        ./run_aCSF
+#        ./run_aCSF
