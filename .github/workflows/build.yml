@@ -78,26 +78,29 @@ jobs:
         python ${{ github.workspace }}/unzip.py -d ${{ github.workspace }}/files/ref2.h5ad.gz
 
     - name: Prepare data
+      shell: cmd
       run: |
         python -m venv ${{ github.workspace }}/env
-        ${{ github.workspace }}/env/Scripts/activate.bat
 
     - name: Install Python dependencies
+      shell: cmd
       run: |
-        ${{ github.workspace }}/env/Scripts/activate.bat
+        call ${{ github.workspace }}/env/Scripts/activate.bat
         pip install --no-cache-dir -r requirements_win.txt
 #        pip install --no-cache-dir torch==1.9.1+cu111
 
     - name: Install pyInstaller
+      shell: cmd
       run: |
-        ${{ github.workspace }}/env/Scripts/activate.bat
+        call ${{ github.workspace }}/env/Scripts/activate.bat
         pip install --no-cache-dir pyinstaller==5.0.1
 
     - name: Build installer
+      shell: cmd
       run: |
         cd ${{ github.workspace }}
-        ${{ github.workspace }}/env/Scripts/activate.bat
-        pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --add-data="C:/hostedtoolcache/windows/Python/3.9.13/x64/lib/site-packages/tables.libs/*;./tables.libs" --add-data="files/*;files" --icon="files/icon3.ico" annotateCSF.py
+        call ${{ github.workspace }}/env/Scripts/activate.bat
+        pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --add-data="env/Lib/site-packages/tables.libs/*;./tables.libs" --add-data="files/*;files" --icon="files/icon3.ico" annotateCSF.py
 
     - name: Create zip archive
       if: startsWith(github.ref, 'refs/tags/')

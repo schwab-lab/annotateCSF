@@ -5,7 +5,7 @@ echo Build and install annotateCSF
 echo =============================
 echo (Please check that Python 3.9 is installed!)
 echo.
-echo Run with '%~n0 -create' to build installer package
+echo Run with '%0 -create' to build installer package
 echo.
 
 if not exist "test_data\10x_csf\matrix.mtx" (
@@ -54,7 +54,7 @@ if "%1" == "-create" (
 
 echo Cleanup environment
 echo -------------------
-env\Scripts\deactivate.bat
+call env\Scripts\deactivate.bat
 
 echo Finished.
 pause
