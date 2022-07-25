@@ -1,4 +1,8 @@
-# WINDOWS Python & library release versions
+In case, you want to manually install annotateCSF in your system (NOT recommended!), this are the minimal requirements.
+Please refer to Readme.md for recommended installation options.
+
+
+# Python & library release versions (Windows)
 
 #python
 python3.9
