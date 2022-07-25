@@ -3,7 +3,7 @@
 echo "Build and install annotateCSF"
 echo "============================="
 
-if [! -f "test_data\10x_csf\matrix.mtx" ]; then
+if [ ! -f "test_data\10x_csf\matrix.mtx" ]; then
     echo "Preparing data"
     echo "--------------"
     gzip -d files/ref2.h5ad.gz
@@ -13,7 +13,7 @@ fi
 if [ ! -d "env" ]; then
     echo "Installing required packages"
     echo "----------------------------"
-    sudo brew install python@3.9 python-tk@3.9
+    brew install python@3.9 python-tk@3.9
 
     echo "Creating virtul environment"
     echo "---------------------------"

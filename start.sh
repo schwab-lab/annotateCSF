@@ -5,7 +5,7 @@ echo "============================="
 
 echo "Run with '$0 -create' to build installer package"
 
-if [! -f "test_data\10x_csf\matrix.mtx" ]; then
+if [ ! -f "test_data\10x_csf\matrix.mtx" ]; then
     echo "Preparing data"
     echo "--------------"
     gzip -d files/ref2.h5ad.gz
