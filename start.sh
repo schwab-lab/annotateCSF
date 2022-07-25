@@ -5,11 +5,11 @@ echo "============================="
 
 echo "Run with '$0 -create' to build installer package"
 
-if [ ! -f "test_data\10x_csf\matrix.mtx" ]; then
+if [ ! -f "files/ref2.h5ad" ]; then
     echo "Preparing data"
     echo "--------------"
-    gzip -d files/ref2.h5ad.gz
     wget 'https://zenodo.org/record/6795112/files/matrix.mtx?download=1' -O 'test_data\10x_csf\matrix.mtx' 
+    gzip -d files/ref2.h5ad.gz
 fi
 
 if [ ! -d "env" ]; then

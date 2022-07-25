@@ -8,11 +8,11 @@ echo.
 echo Run with '%0 -create' to build installer package
 echo.
 
-if not exist "test_data\10x_csf\matrix.mtx" (
+if not exist "files/ref2.h5ad" (
   echo Preparing data
   echo --------------
-  python unzip.py -d files/ref2.h5ad.gz
   powershell -command " (New-Object Net.WebClient).DownloadFile('https://zenodo.org/record/6795112/files/matrix.mtx?download=1', 'test_data\10x_csf\matrix.mtx') "
+  python unzip.py -d files/ref2.h5ad.gz
 )
 
 if not exist env\ (

@@ -6,7 +6,7 @@ AnnotateCSF is a tool for annotation of scRNAseq datasets that contain CSF immun
 
 ## 2. Installation / Starting the software
 
-Our software is provided for Windows 10 and for Linux as a portable package. This package comes with all the required libraries already installed and does not require any installation on your computer. In particular, your existing system configuration will not be changed at all.
+Our software is provided for Windows 10 and for Linux as a portable package. This package comes with all the required libraries already included and does not require any installation on your computer. In particular, your existing system configuration will not be changed at all.
 
 Please download the provided installation archive for your operating system from the [GitHub release page](https://github.com/uni-ms/annotateCSF/releases/tag/1.0), unzip it into a folder of your choice, and run the `run_aCSF` executable.
 
