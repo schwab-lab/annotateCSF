@@ -24,7 +24,7 @@ if not exist env\ (
   echo Installing dependencies
   echo -----------------------
   pip install --no-cache-dir -r requirements_win.txt
-  pip install --no-cache-dir torch==1.9.1+cu111
+  pip install torch==1.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 )
 
 call env\Scripts\activate.bat
@@ -57,4 +57,3 @@ echo -------------------
 call env\Scripts\deactivate.bat
 
 echo Finished.
-pause
