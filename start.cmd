@@ -11,7 +11,7 @@ echo.
 if not exist "files/ref2.h5ad" (
   echo Preparing data
   echo --------------
-  powershell -command " (New-Object Net.WebClient).DownloadFile('https://zenodo.org/record/6795112/files/matrix.mtx?download=1', 'test_data\10x_csf\matrix.mtx') "
+  powershell -command " (New-Object Net.WebClient).DownloadFile('https://zenodo.org/record/6912278/files/matrix.mtx?download=1', 'test_data\10x_csf\matrix.mtx') "
   python unzip.py -d files/ref2.h5ad.gz
 )
 

@@ -6,7 +6,7 @@ echo "============================="
 if [ ! -f "files/ref2.h5ad" ]; then
     echo "Preparing data"
     echo "--------------"
-    wget 'https://zenodo.org/record/6795112/files/matrix.mtx?download=1' -O 'test_data\10x_csf\matrix.mtx' 
+    wget 'https://zenodo.org/record/6912278/files/matrix.mtx?download=1' -O 'test_data\10x_csf\matrix.mtx' 
     gzip -d files/ref2.h5ad.gz
 fi
 

@@ -112,19 +112,20 @@ jobs:
 
     - name: Install minizip-ng
       if: startsWith(github.ref, 'refs/tags/')
-      run:
+      run: |
         (New-Object Net.WebClient).DownloadFile("https://github.com/zlib-ng/minizip-ng/releases/download/3.0.6/minizip-ng-windows.zip", "C:\minizip-ng.zip")
         Expand-Archive -Path "C:\minizip-ng.zip" -DestinationPath "C:\"
 
     - name: Create zip archive (multi-volume)
       if: startsWith(github.ref, 'refs/tags/')
+      shell: cmd
       run: |
-        cd ${{ github.workspace }}/dist
-        Start-Process C:\minizip.exe -ArgumentList '-9 -k 2048000 "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip" *'
+        cd /d ${{ github.workspace }}\dist
+        7z a -tzip -v2000m "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip" *
+        ren "${{ github.workspace }}\annotateCSF_${{ github.event.release.tag_name }}_Win.zip.001" "annotateCSF_${{ github.event.release.tag_name }}_Win.z01"
+        ren "${{ github.workspace }}\annotateCSF_${{ github.event.release.tag_name }}_Win.zip.002" "annotateCSF_${{ github.event.release.tag_name }}_Win.zip"
         dir ${{ github.workspace }}
-#        7z a -tzip -v2000m "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip" *
-#        ren "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip.001" "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.z01"
-#        ren "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip.002" "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip"
+#        C:\minizip.exe -9 -k 2048000 "C:\annotateCSF_${{ github.event.release.tag_name }}_Win.zip" .
 #        Add-Type -AssemblyName System.IO.Compression.FileSystem
 #        [System.IO.Compression.ZipFile]::CreateFromDirectory("${{ github.workspace }}\dist", "${{ github.workspace }}\annotateCSF_${{ github.event.release.tag_name }}_Win.zip", [System.IO.Compression.CompressionLevel]::Optimal, $false)
 #        Compress-Archive -Path * -DestinationPath "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip"
@@ -146,9 +147,10 @@ jobs:
         files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.z01
 
     - name: Test installer
+      shell: cmd
       run: |
-        cd ${{ github.workspace }}/dist/run_aCSF
-#        ./run_aCSF
+        cd /d ${{ github.workspace }}\dist\run_aCSF
+#       run_aCSF.exe
 
 
   macos:
