@@ -73,7 +73,8 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       run: |
         cd ${{ github.workspace }}/dist/run_aCSF
-        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn.7z annoy/* caffe2/* torch/* libc10_cuda.so libcudart* libnvToolsExt* libshm.so libtorch* run_aCSF
+        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn-1.7z torch/*
+        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn-2.7z annoy/* caffe2/* libc10_cuda.so libcudart* libnvToolsExt* libshm.so libtorch* run_aCSF
 
     - name: Upload CUDA release binaries
       uses: softprops/action-gh-release@v1
@@ -81,7 +82,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn.7z
+        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn-1.7z
+
+    - name: Upload CUDA release binaries
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn-2.7z
 
     - name: Test installer
       run: |
