@@ -32,7 +32,6 @@ jobs:
       run: |
         source ${{ github.workspace }}/env/bin/activate
         pip install --no-cache-dir -r requirements_linux.txt
-        pip install --no-cache-dir torch==1.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 
     - name: Install pyInstaller
       run: |
@@ -48,8 +47,8 @@ jobs:
     - name: Create zip archive
       if: startsWith(github.ref, 'refs/tags/')
       run: |
-        cd ${{ github.workspace }}/dist
-        zip -9 -s 2047m -r ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux.zip *
+        cd ${{ github.workspace }}/dist/run_aCSF
+        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux.7z *
 
     - name: Upload release binaries
       uses: softprops/action-gh-release@v1
@@ -57,15 +56,32 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux.zip
+        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux.7z
 
-    - name: Upload release binaries (2)
+    - name: Install CUDA dependencies
+      run: |
+        source ${{ github.workspace }}/env/bin/activate
+        pip install --no-cache-dir torch==1.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
+
+    - name: Build CUDA installer
+      run: |
+        cd ${{ github.workspace }}
+        source env/bin/activate
+        pyinstaller --clean -y -n "run_aCSF" --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --hidden-import PIL --hidden-import PIL._imagingtk --hidden-import PIL._tkinter_finder --add-data="env/lib/python3.9/site-packages/numpy.libs/*:numpy.libs" --add-data="env/lib/python3.9/site-packages/scipy.libs/*:scipy.libs" --add-data="env/lib/python3.9/site-packages/Pillow.libs/*:Pillow.libs" --add-data="env/lib/python3.9/site-packages/h5py.libs/*:h5py.libs" --add-data="files/*:files" annotateCSF.py
+
+    - name: Create CUDA zip archive
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        cd ${{ github.workspace }}/dist/run_aCSF
+        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn.7z annoy/* caffe2/* torch/* libc10_cuda.so libcudart* libnvToolsExt* libshm.so libtorch* run_aCSF
+
+    - name: Upload CUDA release binaries
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux.z01
+        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-AddOn.7z
 
     - name: Test installer
       run: |
@@ -95,7 +111,6 @@ jobs:
       run: |
         call C:\env\Scripts\activate.bat
         pip install --no-cache-dir -r requirements_win.txt
-        pip install --no-cache-dir torch==1.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 
     - name: Install pyInstaller
       shell: cmd
@@ -110,24 +125,21 @@ jobs:
         call C:\env\Scripts\activate.bat
         pyinstaller --clean -y -n "run_aCSF" --win-no-prefer-redirects --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --add-data="C:/env/Lib/site-packages/tables.libs/*;./tables.libs" --add-data="files/*;files" --icon="files/icon3.ico" annotateCSF.py
 
-    - name: Install minizip-ng
-      if: startsWith(github.ref, 'refs/tags/')
-      run: |
-        (New-Object Net.WebClient).DownloadFile("https://github.com/zlib-ng/minizip-ng/releases/download/3.0.6/minizip-ng-windows.zip", "C:\minizip-ng.zip")
-        Expand-Archive -Path "C:\minizip-ng.zip" -DestinationPath "C:\"
+#    - name: Install minizip-ng
+#      if: startsWith(github.ref, 'refs/tags/')
+#      run: |
+#        (New-Object Net.WebClient).DownloadFile("https://github.com/zlib-ng/minizip-ng/releases/download/3.0.6/minizip-ng-windows.zip", "C:\minizip-ng.zip")
+#        Expand-Archive -Path "C:\minizip-ng.zip" -DestinationPath "C:\"
 
-    - name: Create zip archive (multi-volume)
+    - name: Create zip archive
       if: startsWith(github.ref, 'refs/tags/')
       shell: cmd
       run: |
-        cd /d ${{ github.workspace }}\dist
-        7z a -tzip -v2000m "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip" *
-        ren "${{ github.workspace }}\annotateCSF_${{ github.event.release.tag_name }}_Win.zip.001" "annotateCSF_${{ github.event.release.tag_name }}_Win.z01"
-        ren "${{ github.workspace }}\annotateCSF_${{ github.event.release.tag_name }}_Win.zip.002" "annotateCSF_${{ github.event.release.tag_name }}_Win.zip"
-        dir ${{ github.workspace }}
+        cd /d ${{ github.workspace }}\dist\run_aCSF
+        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.7z *
 #        C:\minizip.exe -9 -k 2048000 "C:\annotateCSF_${{ github.event.release.tag_name }}_Win.zip" .
 #        Add-Type -AssemblyName System.IO.Compression.FileSystem
-#        [System.IO.Compression.ZipFile]::CreateFromDirectory("${{ github.workspace }}\dist", "${{ github.workspace }}\annotateCSF_${{ github.event.release.tag_name }}_Win.zip", [System.IO.Compression.CompressionLevel]::Optimal, $false)
+#        [System.IO.Compression.ZipFile]::CreateFromDirectory("${{ github.workspace }}\dist\run_aCSF", "${{ github.workspace }}\annotateCSF_${{ github.event.release.tag_name }}_Win.zip", [System.IO.Compression.CompressionLevel]::Optimal, $false)
 #        Compress-Archive -Path * -DestinationPath "${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip"
 
     - name: Upload release binaries
@@ -136,15 +148,35 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.zip
+        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.7z
 
-    - name: Upload release binaries (2)
+    - name: Install CUDA dependencies
+      shell: cmd
+      run: |
+        call C:\env\Scripts\activate.bat
+        pip install --no-cache-dir torch==1.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
+
+    - name: Build CUDA installer
+      shell: cmd
+      run: |
+        cd ${{ github.workspace }}
+        call C:\env\Scripts\activate.bat
+        pyinstaller --clean -y -n "run_aCSF" --win-no-prefer-redirects --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --add-data="C:/env/Lib/site-packages/tables.libs/*;./tables.libs" --add-data="files/*;files" --icon="files/icon3.ico" annotateCSF.py
+
+    - name: Create CUDA zip archive
+      if: startsWith(github.ref, 'refs/tags/')
+      shell: cmd
+      run: |
+        cd /d ${{ github.workspace }}\dist\run_aCSF
+        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win_CUDA-AddOn.7z annoy/* caffe2/* torch/* run_aCSF.exe
+
+    - name: Upload CUDA release binaries
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win.z01
+        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_Win_CUDA-AddOn.7z
 
     - name: Test installer
       shell: cmd
@@ -186,7 +218,7 @@ jobs:
     - name: Create zip archive
       if: startsWith(github.ref, 'refs/tags/')
       run: |
-        cd ${{ github.workspace }}/dist
+        cd ${{ github.workspace }}/dist/run_aCSF
         zip -9 -r ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS.zip *
 
     - name: Upload release binaries
