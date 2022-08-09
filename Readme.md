@@ -10,7 +10,7 @@ Our software is provided for Windows 10 and for Linux as a portable package. Thi
 
 Please download the provided installation archive for your operating system from the GitHub release page ([v1.0](https://github.com/uni-ms/annotateCSF/releases/tag/v1)), unzip it into a folder of your choice, and run the `run_aCSF` executable.
 
-For GPU hardware acceleration (nVidia CUDA), you need to **additionally** download the (for Linux: both!) CUDA-AddOn archive(s) for your operating system and unzip them into the same folder (overwrite existing files).
+For GPU hardware acceleration (nVidia CUDA), you need to instead download the (both) CUDA-archive(s) for your operating system and unzip it into the same folder.
 
 ### Alternatively:
 If you want to run the software on a different operating system (e.g. macOS), or customize the source code, then you need a Python 3.9 installation with some packages on your system.
