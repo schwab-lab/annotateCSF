@@ -89,15 +89,22 @@ def get_hues():
 def plot_heatmap():
     if len(adata_sub2.obs.predictions.value_counts()) > 15:
         try:
-            # small plot
-            sc.pl.matrixplot(adata_sub2, categories_order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'], var_names=['CD19', 'IL3RA', 'CD14', 'CD1C', 'NCAM1', 'CD8B', 'CD4'], groupby='predictions', standard_scale='var', cmap='inferno')
-            # large plot
-            sc.pl.matrixplot(adata_sub2, categories_order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'], var_names=[ 'CD69', 'IL4R', 'FCRL5', 'CD38', 'IL3RA', 'CCR2', 'MRC1', 'EMP3', 'TMEM119', 'ITGAX', 'TREM2', 'CD1C', 'SIGLEC6', 'CLEC9A', 'NCAM1', 'EOMES', 'ITGAE', 'KIT', 'TRAV1-2', 'TRDC', 'TRDV2', 'CCR7', 'HLA-DRA', 'CD160', 'ITGA1', 'CXCR4', 'GNLY', 'TSHZ2', 'CCR6', 'SLC40A1', 'TBX21', 'FOXP3', 'CXCR6', 'GZMH'], groupby='predictions', standard_scale='var', cmap='inferno')
-        except:
-            # small plot
-            sc.pl.matrixplot(adata_sub2, var_names=['CD19', 'IL3RA', 'CD14', 'CD1C', 'NCAM1', 'CD8B', 'CD4'], groupby='predictions', standard_scale='var', cmap='inferno')
-            # large plot
-            sc.pl.matrixplot(adata_sub2, var_names=[ 'CD69', 'IL4R', 'FCRL5', 'CD38', 'IL3RA', 'CCR2', 'MRC1', 'EMP3', 'TMEM119', 'ITGAX', 'TREM2', 'CD1C', 'SIGLEC6', 'CLEC9A', 'NCAM1', 'EOMES', 'ITGAE', 'KIT', 'TRAV1-2', 'TRDC', 'TRDV2', 'CCR7', 'HLA-DRA', 'CD160', 'ITGA1', 'CXCR4', 'GNLY', 'TSHZ2', 'CCR6', 'SLC40A1', 'TBX21', 'FOXP3', 'CXCR6', 'GZMH'], groupby='predictions', standard_scale='var', cmap='inferno')
+            #define genes to plot
+            plot1 = {' B activated': 'CD19', 'B IL4R+': 'CD19', 'B atypical': 'CD19', 'Plasmacells': 'CD19', 'pDCs': 'IL3RA', 'Monocytes': 'CD14', 'BAM MRC1+': 'CD14', 'BAM EMP3+': 'CD14', 'MG CX3CR1+': 'CD14', 'MG CCL2+': 'CD14', 'MG TREM2hi': 'CD14', 'mDCs CD1c+': 'CD1C', 'mDCs AXL+SIGLEC6+': 'CD1C', 'mDCs CLEC9A+': 'CD1C', 'NK bright': 'NCAM1', 'NK dim': 'NCAM1', 'TR-NK': 'NCAM1', 'ILC': 'NCAM1', 'MAIT': 'CD8B', 'gdT Vd2+': 'CD8B', 'gdT Vd2-': 'CD8B', 'CD8 CM': 'CD8B', 'CD8 EM HLA-DRA+': 'CD8B', 'CD8 EM CD160+': 'CD8B', 'CD8 TRM ITGA1+': 'CD8B', 'CD8 TRM ITGA1-': 'CD8B', 'CD8 CTL': 'CD8B', 'Tfh': 'CD4', 'Th17': 'CD4', 'Th2/Th22': 'CD4', 'Th1': 'CD4', 'Tregs': 'CD4', 'CCR5high Th17.1': 'CD4', 'CD4 TEMRA': 'CD4'}
+            plot2 = {' B activated': 'CD69', 'B IL4R+': 'IL4R', 'B atypical': 'FCRL5', 'Plasmacells': 'IGHG1', 'pDCs': 'IL3RA', 'Monocytes': 'VCAN', 'BAM MRC1+': 'MRC1', 'BAM EMP3+': 'EMP3', 'MG CX3CR1+': 'CX3CR1', 'MG CCL2+': 'SPP1', 'MG TREM2hi': 'TREM2', 'mDCs CD1c+': 'CD1C', 'mDCs AXL+SIGLEC6+': 'SIGLEC6', 'mDCs CLEC9A+': 'CLEC9A', 'NK bright': 'NCAM1', 'NK dim': 'EOMES', 'TR-NK': 'IKZF3', 'ILC': 'KIT', 'MAIT': 'TRAV1-2', 'gdT Vd2+': 'TRDC', 'gdT Vd2-': 'TRDV2', 'CD8 CM': 'CCR7', 'CD8 EM HLA-DRA+': 'HLA-DRA', 'CD8 EM CD160+': 'CD160', 'CD8 TRM ITGA1+': 'ITGA1', 'CD8 TRM ITGA1-': 'NR4A2', 'CD8 CTL': 'GNLY', 'Tfh': 'TSHZ2', 'Th17': 'CCR6', 'Th2/Th22': 'SLC40A1', 'Th1': 'TBX21', 'Tregs': 'FOXP3', 'CCR5high Th17.1': 'CXCR6', 'CD4 TEMRA': 'GZMH'}
+
+            subsets_in_data = sorted(adata_sub2.obs.predictions.value_counts().index.values)   # gibt eine Liste der vorhandenen subsets im dataset
+            genes_in_data_set = set(adata_sub2.var.gene_symbols)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
+
+            # plot lineage heatmap
+            genes_in_data = genes_in_data_set.intersection(plot1.values())
+            plot_data = { k:v for k,v in plot1.items() if (k in subsets_in_data and v in genes_in_data) }
+            sc.pl.matrixplot(adata_sub2[adata_sub2.obs.predictions.isin(list(plot_data.keys()))], categories_order=list(plot_data.keys()), var_names=list(dict.fromkeys(plot_data.values())), groupby='predictions', standard_scale='var', cmap='inferno')
+
+            # plot subset heatmap
+            genes_in_data = genes_in_data_set.intersection(plot2.values())
+            plot_data = { k:v for k,v in plot2.items() if (k in subsets_in_data and v in genes_in_data) }
+            sc.pl.matrixplot(adata_sub2[adata_sub2.obs.predictions.isin(list(plot_data.keys()))], categories_order=list(plot_data.keys()), var_names=list(plot_data.values()), groupby='predictions', standard_scale='var', cmap='inferno')
 
     if 'CD8 CM' in adata_sub2.obs.predictions.values and 'Th2/Th22' not in adata_sub2.obs.predictions.values:
         try:
