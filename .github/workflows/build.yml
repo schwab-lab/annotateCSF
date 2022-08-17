@@ -36,7 +36,7 @@ jobs:
     - name: Install pyInstaller
       run: |
         source ${{ github.workspace }}/env/bin/activate
-        pip install --no-cache-dir pyinstaller==5.0.1
+        pip install --no-cache-dir pyinstaller  #==5.0.1
 
     - name: Build installer
       run: |
@@ -257,8 +257,8 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       run: |
         cd ${{ github.workspace }}/dist/run_aCSF
-#        zip -9 -r ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS.zip *
         7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS.7z *
+#        zip -9 -r ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS.zip *
 
     - name: Upload zip archive to Sciebo
       if: startsWith(github.ref, 'refs/tags/')

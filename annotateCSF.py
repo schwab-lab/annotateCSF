@@ -656,7 +656,7 @@ def load_user_adata():
     print(colored('Setting hyperparameters for VAE. Number of neurons per layer:', 'white'), colored(neurons, 'yellow'), colored('Number of latent variables:', 'white'), colored(latents, 'yellow'))
 
     # set seed
-    scvi.settings.seed = 94705
+    #scvi.settings.seed = 94705
 
     # make scVI VAE for ref
     print(colored('Preparing data and commencing training on reference dataset', 'red'))
