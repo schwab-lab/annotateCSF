@@ -86,7 +86,7 @@ def get_hues():
     global new_hues
     new_hues = hue_var
 
-def plot_heatmap():
+def plot_heatmap_def():
     plot1 = {' B activated | B IL4R+ | B atypical | Plasmacells': ['CD19', 'CD79A', 'TNFRSF13B'], 'pDCs': ['IL3RA', 'IRF8', 'LAMP5'], 'Monocytes | BAM MRC1+ | BAM EMP3+ | MG CX3CR1+ | MG CCL2+ | MG TREM2hi': ['CD14', 'CD68', 'MS4A7'], 'mDCs CD1c+ | mDCs AXL+SIGLEC6+ | mDCs CLEC9A+': ['CD1C', 'AFF3', 'HLA-DRB5'], 'NK bright | NK dim | TR-NK | ILC': ['NCAM1', 'GNLY', 'XCL1'], 'MAIT | gdT Vd2+ | gdT Vd2- | CD8 CM | CD8 EM HLA-DRA+ | CD8 EM CD160+ | CD8 TRM ITGA1+ | CD8 TRM ITGA1- | CD8 CTL': ['CD8B', 'CD8A', 'GZMH'], 'Tfh | Th17 | Th2/Th22 | Th1 | Tregs | CCR5high Th17.1 | CD4 TEMRA': ['CD4', 'TNFRSF25', 'AQP3']}
     plot2 = {' B activated': ['CD69', 'CXCR4', 'BACH2'], 'B IL4R+': ['IL4R', 'FCER2', 'IGHM'], 'B atypical': ['FCRL5', 'CD1C', 'GPR34'], 'Plasmacells': ['IGHG1', 'SDC1', 'CD38'], 'pDCs': ['IL3RA', 'IRF7', 'IRF8'], 'Monocytes': ['VCAN', 'S100A12', 'CCR2'], 'BAM MRC1+': ['MRC1', 'KCNAB1', 'MARCO'], 'BAM EMP3+': ['EMP3', 'CYP27A1', 'TIMD4'], 'MG CX3CR1+': ['CX3CR1', 'TMEM119', 'P2RY12'], 'MG CCL2+': ['SPP1', 'IRAK2', 'ITGAX'], 'MG TREM2hi': ['TREM2', 'APOC1', 'GPNMB'], 'mDCs CD1c+': ['CD1C', 'CD207', 'CD1E'], 'mDCs AXL+SIGLEC6+': ['SIGLEC6', 'CLIC3', 'CD5D'], 'mDCs CLEC9A+': ['CLEC9A', 'PPP1R14A', 'TMEM14A'], 'NK bright': ['NCAM1', 'KLRC3', 'SPINK2'], 'NK dim': ['EOMES', 'TTC38', 'FGFBP2'], 'TR-NK': ['IKZF3', 'KRT81', 'ITGAE'], 'ILC': ['KIT', 'TNFRSF4', 'IFNGR2'], 'MAIT': ['TRAV1-2', 'NCR3', 'KLRB1'], 'gdT Vd2+': ['TRDC', 'TRGV9', 'ZBTB16'], 'gdT Vd2-': ['TRDV2', 'LSR', 'RTKN2'], 'CD8 CM': ['CCR7', 'NELL2', 'MAL'], 'CD8 EM HLA-DRA+': ['HLA-DRA', 'MSC', 'HLA-DRB5'], 'CD8 EM CD160+': ['CD160', 'FCRL6', 'FGR'], 'CD8 TRM ITGA1+': ['ITGA1', 'ZNF683', 'ITGAE'], 'CD8 TRM ITGA1-': ['NR4A2', 'CEMIP2', 'CXCR4'], 'CD8 CTL': ['GNLY', 'FXYD2', 'GZMB'], 'Th17.1,CD4': ['TEMRA', 'PASK', 'CXCR5'], 'Th17': ['CCR6', 'USP10', 'RORC'], 'Th2/Th22': ['SLC40A1', 'SOCS1', 'CCR4'], 'Th1': ['TBX21', 'TRBC1', 'CXCR3'], 'Tregs': ['FOXP3', 'RTKN2', 'IKZF2'], 'CCR5high Th17.1': ['CXCR6', 'CD69', 'RGS1'], 'CD4 TEMRA': ['GZMH', 'PDCD1', 'CX3CR1']}
 
@@ -123,6 +123,22 @@ def plot_heatmap():
         else:
             print ("Omitting subset %s due to missingness of the subset or lack of marker gene expression." % subset)
     sc.pl.matrixplot(adata_sub2[adata_sub2.obs.predictions.isin(list(plot_data.keys()))], categories_order=list(plot_data.keys()), var_names=list(plot_data.values()), groupby='predictions', standard_scale='var', cmap='inferno')
+
+def plot_heatmap_cust():
+    global genes_to_plot
+    get_genes_to_plot()
+    genes_to_plot = genes_to_plot.get()
+
+    print ('Generating custom heatmap...')    
+    genes_in_data_set = set(adata_sub2.var.gene_symbols)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
+    plot_genes = genes_in_data_set.intersection(genes_to_plot.split(', '))
+    sc.pl.matrixplot(adata_sub2, var_names=plot_genes, groupby='predictions', standard_scale='var', dendrogram=true, cmap='inferno')
+
+def plot_heatmap():
+    if (heatmap_choice.get() == 'Custom heatmap'):
+        plot_heatmap_cust()
+    else:
+        plot_heatmap_def()
 
 def plot_umap():
     subset = subset_choice2.get()
@@ -1043,12 +1059,13 @@ def subwindow3():
     image2 =  PIL.ImageTk.PhotoImage(image2)
     Label(quant_win2, image = image2).pack(side=TOP)
 
-    quant_win2.title('Do you want to subset?')
+    quant_win2.title('Which plot do you want to create?')
     # checkbuttons
     Button(quant_win2 , text = 'Stacked barchart', width = 30, height = 1, command = lambda:[plot_freq1()]).pack(side=LEFT)
     Button(quant_win2 , text = 'Boxplot by celltype', width = 54, height = 1, command = lambda:[plot_freq2()]).pack(side=LEFT)
     Button(quant_win2, text = 'Boxplot by celltype and condition', width = 56, height = 1, command = lambda:[plot_freq3()]).pack(side=LEFT)
-    Button(quant_win2, text = 'Heatmap for label markers', width = 43, height = 1, command = lambda:[plot_heatmap()]).pack(side=LEFT)
+    heatmap_options = ['Default lineage/subset heatmap', 'Custom heatmap']
+    OptionMenu(quant_win2, heatmap_choice, *heatmap_options, command = lambda _:[plot_heatmap()]).pack(side=LEFT)
 
 def subwindow4():
     dge_win = Toplevel()
@@ -1144,6 +1161,8 @@ data_to_write = StringVar(root)
 data_to_write.set('IV. d. Write data')
 subset_choice2 = StringVar(root)
 subset_choice2.set('IV. a. Plot UMAP')
+heatmap_choice = StringVar(root)
+heatmap_choice.set('Heatmap for label markers')
 count_thresh = IntVar(root)
 count_thresh.set(1500)
 feat_thresh = IntVar(root)
