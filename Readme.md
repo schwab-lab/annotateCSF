@@ -8,7 +8,7 @@ AnnotateCSF is a tool for annotation of scRNAseq datasets that contain CSF immun
 
 Our software is provided for Windows 10 and for Linux as a portable package. This package comes with all the required libraries already included and does not require any installation on your computer. In particular, your existing system configuration will not be changed at all.
 
-Please download the provided installation archive for your operating system from the GitHub release page ([v1.0](https://github.com/uni-ms/annotateCSF/releases/tag/v1.0)), unzip it into a folder of your choice, and run the `run_aCSF` executable.
+Please download the provided installation archive for your operating system from our Online Storage ([v1.0](https://uni-muenster.sciebo.de/s/X3BC6vNhuzEun6i?path=%2FannotateCSF_release)), unzip it into a folder of your choice, and run the `run_aCSF` executable.
 
 ### Alternatively:
 If you want to run the software on a different operating system (e.g. macOS), or customize the source code, then you need a Python 3.9 installation with some packages on your system.
@@ -43,10 +43,9 @@ Please note that you have to download the measurement data `matrix.mtx` in the f
 (This will be done by the startup script.)
  
 ## 4. The GUI
-The GUI has been designed to allow for an easy, linear and structured workflow. 
-The main window also serves a quick start tutorial, and provides most 
-information that is needed to run the tool. Pressing certain buttons will open sub-
-windows to allow for more choices for e. g. plotting.
+The GUI has been designed to allow for an easy, linear and structured workflow.
+The main window also serves a quick start tutorial, and provides most information that is needed to run the tool.
+Pressing certain buttons will open sub windows to allow for more choices for e. g. plotting.
 ![annotateCSF Main Window](doc/main.png)
 
 
@@ -55,14 +54,17 @@ The tool requires the data to be in the 10X format, i.e. it requires a matrix.mt
 
 (1) Click on *"I. a. Choose 10X data"* and select a folder, in which your dataset (consisting of `matrix.mtx`, `features.tsv`/`genes.tsv` and `barcodes.tsv`) resides.
 This data is typically obtained from running the CellRanger software on raw fastq-files. If you are working from a Seurat object in R, data in 10X format can easily be written to your disk using the DropletUtils library and subsequently be read into aCSF:
-```DropletUtils::write10xCounts("/path/10x_files", seurat_object@assay$RNA@counts)```
+```
+DropletUtils::write10xCounts("/path/10x_files", seurat_object@assay$RNA@counts)
+```
 
 As a start, you can choose the provided sample folder [10x_csf](test_data/10x_csf) in [test_data](test_data).
 
 (2) Click on *"II. a. Choose condition.tsv"* and select a tsv-file, providing the relevant test condition for each sequence.
 You can just choose our sample file [condition_csf.csv](test_data/condition_csf.tsv) in [test_data](test_data). In our sample, it is MS (Multiple Sclerosis) vs HD (healthy donor).
 
-Metadata .tsv files for e.g. medical condition can also be exported from a Seurat object in R by typing: : `write.table(seurat_object$condition, "your_condition.tsv"`.
+Metadata .tsv files for e.g. medical condition can also be exported from a Seurat object in R by typing:
+`write.table(seurat_object$condition, "your_condition.tsv"`.
 
 The file should have the following format:
 | X			|	|
