@@ -1,14 +1,14 @@
 # Usage Guide
-#### A standard workflow to annotate a simple CSF dataset
+#### A standard workflow to annotate a scRNAseq CSF dataset
 
 ## 1. What is annotateCSF?
-AnnotateCSF is a tool for annotation of scRNAseq datasets that contain CSF immune cells and wraps a user interface around scanpy, scVI, and scANVI workflows. You can also perform downstream analyses such as differential composition and -expression analysis.
+AnnotateCSF is a tool for annotation of scRNAseq datasets that contain CSF immune cells and wraps a user interface around scanpy (Wolf et al., 2018), scVI-tools (Lopez et al., 2018; Gayoso et al., 2022), and scANVI (Xu et al., 2021) workflows. You can also perform downstream analyses such as differential composition and -expression analysis.
 
 ## 2. Installation / Starting the software
 
 Our software is provided for Windows 10 and for Linux as a portable package. This package comes with all the required libraries already included and does not require any installation on your computer. In particular, your existing system configuration will not be changed at all.
 
-Please download the provided installation archive for your operating system from our Online Storage ([v1.0](https://uni-muenster.sciebo.de/s/X3BC6vNhuzEun6i?path=%2FannotateCSF_release)), unzip it into a folder of your choice, and run the `run_aCSF` executable.
+Please download the provided installation archive for your operating system from our Online Storage ([v1.0](https://uni-muenster.sciebo.de/s/X3BC6vNhuzEun6i?path=%2FannotateCSF_release)), unzip it into a folder of your choice (requires the freeware 7zip), and run the `run_aCSF` executable.
 
 ### Alternatively:
 If you want to run the software on a different operating system (e.g. macOS), or customize the source code, then you need a Python 3.9 installation with some packages on your system.
@@ -50,7 +50,7 @@ Pressing certain buttons will open sub windows to allow for more choices for e. 
 
 
 ## 5. Providing input data
-The tool requires the data to be in the 10X format, i.e. it requires a matrix.mtx, barcodes.tsv, features.tsv (or genes.tsv from older cellranger versions). This format is the most widely used format and other formats can typically be transferred to the 10X format.
+The tool requires the data to be in the 10X format, i.e. it requires a matrix.mtx, barcodes.tsv and features.tsv (or genes.tsv from older cellranger versions). This format is the most widely used format and other formats can typically be transferred to the 10X format.
 
 (1) Click on *"I. a. Choose 10X data"* and select a folder, in which your dataset (consisting of `matrix.mtx`, `features.tsv`/`genes.tsv` and `barcodes.tsv`) resides.
 This data is typically obtained from running the CellRanger software on raw fastq-files. If you are working from a Seurat object in R, data in 10X format can easily be written to your disk using the DropletUtils library and subsequently be read into aCSF:
@@ -61,7 +61,7 @@ DropletUtils::write10xCounts("/path/10x_files", seurat_object@assay$RNA@counts)
 As a start, you can choose the provided sample folder [10x_csf](test_data/10x_csf) in [test_data](test_data).
 
 (2) Click on *"II. a. Choose condition.tsv"* and select a tsv-file, providing the relevant test condition for each sequence.
-You can just choose our sample file [condition_csf.csv](test_data/condition_csf.tsv) in [test_data](test_data). In our sample, it is MS (Multiple Sclerosis) vs HD (healthy donor).
+You can just choose the sample file [condition_csf.csv](test_data/condition_csf.tsv) in [test_data](test_data). The dataset consists of control-, PD (Parkinson's disease)- and LBD (Lewy body dementia) CSF samples.
 
 Metadata .tsv files for e.g. medical condition can also be exported from a Seurat object in R by typing:
 `write.table(seurat_object$condition, "your_condition.tsv"`.
@@ -69,10 +69,10 @@ Metadata .tsv files for e.g. medical condition can also be exported from a Seura
 The file should have the following format:
 | X			|	|
 |-----------------------|-------|
-| AAACCTGAGCATGGCA-1_2	| HD	|
-| AAACGGGAGGTTACCT-1_2	| HD	|
-| TTTGTCATCAGATAAG-1_22	| MS	|
-| TTTGTCATCGGAGGTA-1_22	| MS	|
+| AAACCTGAGCATGGCA-1_2	| Control	|
+| AAACGGGAGGTTACCT-1_2	| Control	|
+| TTTGTCATCAGATAAG-1_22	| PD	|
+| TTTGTCATCGGAGGTA-1_22	| PD	|
 
 (3) (optional) In case, you have data from more than one study, click on *"II. b. Choose study.tsv"* and select a tsv-file, providing a study identifier for each sequence. You can later visualize this in UMAP plots and see whether the data has been well integrated with regard to the different studies.
 The file shall have the following format:
@@ -88,10 +88,10 @@ Of course, you can again chose the provided sample [file](test_data/idents_csf.t
 The file shall have the following format:
 | X			|			 |
 |-----------------------|------------------------|
-| AAACCTGAGCATGGCA-1_2	| HA5876_HD1_CSF_RNA.csv |
-| AAACGGGAGGTTACCT-1_2	| HA5876_HD1_CSF_RNA.csv |
-| TTTGTCATCAGATAAG-1_22	| MS1131_MS5_CSF_RNA.csv |
-| TTTGTCATCGGAGGTA-1_22	| MS1131_MS5_CSF_RNA.csv |
+| AAACCTGAGCATGGCA-1_2	| Donor_1 |
+| AAACGGGAGGTTACCT-1_2	| Donor_1 |
+| TTTGTCATCAGATAAG-1_22	| Donor_2 |
+| TTTGTCATCGGAGGTA-1_22	| Donor_2 |
 
 ## 6. Run Calculation
 When you have selected all necessary files, please click on *"III. Run mapping"*.
