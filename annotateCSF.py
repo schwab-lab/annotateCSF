@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import simpledialog
+from tkinter.colorchooser import askcolor
 import PIL.Image
 import PIL.ImageTk
 #external imports
@@ -19,12 +20,12 @@ import seaborn as sns
 import scrublet as scr
 import torch
 import numpy as np
+import random
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 import pandastable as pt
 from termcolor import colored
 import termcolor
-from tkinter.colorchooser import askcolor
 
 # root for main widget
 root = Tk()
@@ -62,6 +63,12 @@ def get_save_path():
 
 def get_genes_to_plot():
     genes = simpledialog.askstring(title='Genes to plot', prompt='Name gene or metadata to plot, example1: FOXP3; example2: condition')
+    gene_var.set(value=genes)
+    global genes_to_plot
+    genes_to_plot = gene_var
+
+def get_genes_to_plot2():
+    genes = simpledialog.askstring(title='Genes to plot', prompt='Please name the desired genes seperated by commas, e. g. "CCR6, FOXP3, CCR5"')
     gene_var.set(value=genes)
     global genes_to_plot
     genes_to_plot = gene_var
@@ -121,18 +128,19 @@ def plot_heatmap_def():
         if (gene is not None and k in subsets_in_data):
             plot_data[k] = gene
         else:
-            print ("Omitting subset %s due to missingness of the subset or lack of marker gene expression." % subset)
+            print ("Omitting subset %s due to missingness of the subset or lack of marker gene expression." % k)
     sc.pl.matrixplot(adata_sub2[adata_sub2.obs.predictions.isin(list(plot_data.keys()))], categories_order=list(plot_data.keys()), var_names=list(plot_data.values()), groupby='predictions', standard_scale='var', cmap='inferno')
 
 def plot_heatmap_cust():
     global genes_to_plot
-    get_genes_to_plot()
+    get_genes_to_plot2()
     genes_to_plot = genes_to_plot.get()
 
     print ('Generating custom heatmap...')    
     genes_in_data_set = set(adata_sub2.var.gene_symbols)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
     plot_genes = genes_in_data_set.intersection(genes_to_plot.split(', '))
-    sc.pl.matrixplot(adata_sub2, var_names=plot_genes, groupby='predictions', standard_scale='var', dendrogram=true, cmap='inferno')
+
+    sc.pl.matrixplot(adata_sub2, var_names=list(plot_genes), groupby='predictions', standard_scale='var', dendrogram=True, cmap='inferno')
 
 def plot_heatmap():
     if (heatmap_choice.get() == 'Custom heatmap'):
@@ -144,6 +152,11 @@ def plot_umap():
     subset = subset_choice2.get()
     global genes_to_plot
     genes_to_plot = genes_to_plot.get()
+
+    if (genes_to_plot not in adata_sub2.var.gene_symbols):
+        print('You entered ' + genes_to_plot + '. This is either not a valid gene symbol or the gene was not found in the dataset')
+        return
+
     if subset == 'Do not subset':
         try:
             sc.pl.umap(adata_to_sub, color = [genes_to_plot], size=40, cmap="inferno", legend_loc="on data")
@@ -672,7 +685,8 @@ def load_user_adata():
     print(colored('Setting hyperparameters for VAE. Number of neurons per layer:', 'white'), colored(neurons, 'yellow'), colored('Number of latent variables:', 'white'), colored(latents, 'yellow'))
 
     # set seed
-    #scvi.settings.seed = 94705
+    random.seed()
+    scvi.settings.seed = random.randint(0,99999999)
 
     # make scVI VAE for ref
     print(colored('Preparing data and commencing training on reference dataset', 'red'))
@@ -860,7 +874,8 @@ def load_user_adata2():
     latents = num_latents.get()
     print(colored('Setting hyperparameters for VAE. Number of neurons per layer:', 'white'), colored(neurons, 'yellow'), colored('Number of layers:', 'white'), colored(layers, 'yellow'), colored('Number of latent variables:', 'white'), colored(latents, 'yellow'))
     # set seed
-    #scvi.settings.seed = 94705
+    random.seed()
+    scvi.settings.seed = random.randint(0,99999999)
     # make scVI VAE for adata
     print(colored('Preparing data and commencing training on dataset', 'red'))
     scvi.data.setup_anndata(adata, layer="counts", batch_key="orig.ident", categorical_covariate_keys = ['tissue', 'study', 'condition'], continuous_covariate_keys = ['pct_counts_mt'])
@@ -928,7 +943,7 @@ def ask_threshs():
     Message(thresh_window, text = 'Min counts:', width=350).pack()
     thresh1 = Entry(thresh_window, textvariable = count_thresh)
     thresh1.pack()
-    Message(thresh_window, text = 'Min unique feautres:', width=350).pack()
+    Message(thresh_window, text = 'Min unique features:', width=350).pack()
     thresh2 = Entry(thresh_window, textvariable = feat_thresh)
     thresh2.pack()
     Message(thresh_window, text = 'Max %MT:', width=350).pack()

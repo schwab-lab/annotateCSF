@@ -1,8 +1,6 @@
 name: Build installers for all operating systems
 
 on:
-  push:
-    branches: [ master ]
   release:
     types: [ created ]
 
@@ -56,7 +54,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       run: |
         cd ${{ github.workspace }}
-        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_Linux.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Linux.7z"
+        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_Linux.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/OSTKAMP_CSF_immune_cell_provenance/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Linux.7z"
 
     - name: Upload release binaries
       uses: softprops/action-gh-release@v1
@@ -88,8 +86,8 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       run: |
         cd ${{ github.workspace }}
-        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-1.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-1.7z"
-        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-2.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-2.7z"
+        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-1.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/OSTKAMP_CSF_immune_cell_provenance/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-1.7z"
+        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-2.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/annotateCSF_release/OSTKAMP_CSF_immune_cell_provenance/annotateCSF_${{ github.event.release.tag_name }}_Linux_CUDA-2.7z"
 
     - name: Upload CUDA release binaries (1)
       uses: softprops/action-gh-release@v1
@@ -171,7 +169,7 @@ jobs:
       shell: cmd
       run: |
         cd ${{ github.workspace }}
-        curl -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} -T "annotateCSF_${{ github.event.release.tag_name }}_Win.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Win.7z"
+        curl -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} -T "annotateCSF_${{ github.event.release.tag_name }}_Win.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/OSTKAMP_CSF_immune_cell_provenance/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Win.7z"
 
     - name: Upload release binaries
       uses: softprops/action-gh-release@v1
@@ -208,7 +206,7 @@ jobs:
       shell: cmd
       run: |
         cd ${{ github.workspace }}
-        curl -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} -T "annotateCSF_${{ github.event.release.tag_name }}_Win_CUDA.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Win_CUDA.7z"
+        curl -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} -T "annotateCSF_${{ github.event.release.tag_name }}_Win_CUDA.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/OSTKAMP_CSF_immune_cell_provenance/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_Win_CUDA.7z"
 
     - name: Upload CUDA release binaries
       uses: softprops/action-gh-release@v1
@@ -266,17 +264,42 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       run: |
         cd ${{ github.workspace }}
-        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_MacOS.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_MacOS.7z"
+        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_MacOS.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/OSTKAMP_CSF_immune_cell_provenance/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_MacOS.7z"
 
-    - name: Upload release binaries
-      uses: softprops/action-gh-release@v1
+#    - name: Upload release binaries
+#      uses: softprops/action-gh-release@v1
+#      if: startsWith(github.ref, 'refs/tags/')
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      with:
+#        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS.7z
+
+#    - name: Test installer
+#      run: |
+#        cd ${{ github.workspace }}/dist/run_aCSF
+#        ./run_aCSF
+
+    - name: Build arm64 installer
+      run: |
+        cd ${{ github.workspace }}
+        pyinstaller --clean -y -n "run_aCSF" --target-arch arm64 --copy-metadata anndata --copy-metadata scvi-tools --copy-metadata scanpy --add-data="files/*:files" annotateCSF.py
+
+    - name: Create arm64 zip archive
       if: startsWith(github.ref, 'refs/tags/')
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS.7z
-
-    - name: Test installer
       run: |
         cd ${{ github.workspace }}/dist/run_aCSF
-#        ./run_aCSF
+        7z a -mx=9 ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS_arm64.7z *
+
+    - name: Upload arm64 zip archive to Sciebo
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        cd ${{ github.workspace }}
+        curl -X PUT -u ${{ secrets.SCIEBO_USER }}:${{ secrets.SCIEBO_PASSWORD }} --data-binary @"annotateCSF_${{ github.event.release.tag_name }}_MacOS_arm64.7z" "https://uni-muenster.sciebo.de/remote.php/webdav/OSTKAMP_CSF_immune_cell_provenance/annotateCSF_release/annotateCSF_${{ github.event.release.tag_name }}_MacOS_arm64.7z"
+
+#    - name: Upload arm64 release binaries
+#      uses: softprops/action-gh-release@v1
+#      if: startsWith(github.ref, 'refs/tags/')
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      with:
+#        files: ${{ github.workspace }}/annotateCSF_${{ github.event.release.tag_name }}_MacOS_arm64.7z
