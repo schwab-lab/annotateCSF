@@ -8,7 +8,7 @@ echo "Run with '$0 -create' to build installer package"
 if [ ! -f "files/ref2.h5ad" ]; then
     echo "Preparing data"
     echo "--------------"
-    wget 'https://zenodo.org/record/6912278/files/matrix.mtx?download=1' -O 'test_data\10x_csf\matrix.mtx' 
+    wget 'https://zenodo.org/record/6912278/files/matrix.mtx?download=1' -O 'test_data/10x_csf/matrix.mtx' 
     gzip -d files/ref2.h5ad.gz
 fi
 
@@ -40,7 +40,7 @@ echo "Waiting for annotateCSF to be closed . . . "
 python annotateCSF.py
 
 
-if [ $1 == "-create" ]; then
+if [ $1 = "-create" ]; then
     echo "Installing pyInstaller"
     echo "----------------------"
     pip install --no-cache-dir pyinstaller==5.0.1

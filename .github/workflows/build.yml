@@ -36,7 +36,7 @@ jobs:
     - name: Install pyInstaller
       run: |
         source ${{ github.workspace }}/env/bin/activate
-        pip install --no-cache-dir pyinstaller  #==5.0.1
+        pip install --no-cache-dir pyinstaller==5.0.1
 
     - name: Build installer
       run: |

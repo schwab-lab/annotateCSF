@@ -10,6 +10,8 @@ Our software is provided for Windows 10 and for Linux as a portable package. Thi
 
 Please download the provided installation archive for your operating system from our Online Storage ([v1.0](https://uni-muenster.sciebo.de/s/X3BC6vNhuzEun6i?path=%2FannotateCSF_release)), unzip it with [7zip](https://www.7-zip.org/download.html) into a folder of your choice, and run the `run_aCSF` executable.
 
+Under Linux, we recommend to start `./run_aCSF` from a terminal rather than from your file browser, because otherwise you may not see annotateCSF's console output (status, error messages, etc).
+
 ### Alternatively:
 If you want to run the software on a different operating system (e.g. macOS), or customize the source code, then you need a Python 3.9 installation with some packages on your system.
 
@@ -67,12 +69,12 @@ Metadata .tsv files for e.g. medical condition can also be exported from a Seura
 `write.table(seurat_object$condition, "your_condition.tsv"`.
 
 The file should have the following format:
-| X			|	|
-|-----------------------|-------|
-| AAACCTGAGCATGGCA-1_2	| Control	|
-| AAACGGGAGGTTACCT-1_2	| Control	|
-| TTTGTCATCAGATAAG-1_22	| PD	|
-| TTTGTCATCGGAGGTA-1_22	| PD	|
+| X			|	  |
+|-----------------------|---------|
+| AAACCTGAGCATGGCA-1_2	| Control |
+| AAACGGGAGGTTACCT-1_2	| Control |
+| TTTGTCATCAGATAAG-1_22	| PD	  |
+| TTTGTCATCGGAGGTA-1_22	| PD	  |
 
 (3) (optional) In case, you have data from more than one study, click on *"II. b. Choose study.tsv"* and select a tsv-file, providing a study identifier for each sequence. You can later visualize this in UMAP plots and see whether the data has been well integrated with regard to the different studies.
 The file shall have the following format:
@@ -86,8 +88,8 @@ The file shall have the following format:
 (4) Click on *"II. c. Choose idents.tsv"* and select a tsv-file containing a sample identifier for each sequence.
 Of course, you can again chose the provided sample [file](test_data/idents_csf.tsv).
 The file shall have the following format:
-| X			|			 |
-|-----------------------|------------------------|
+| X			|	  |
+|-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Donor_1 |
 | AAACGGGAGGTTACCT-1_2	| Donor_1 |
 | TTTGTCATCAGATAAG-1_22	| Donor_2 |
