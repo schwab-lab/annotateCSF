@@ -8,11 +8,13 @@ AnnotateCSF is a tool for annotation of scRNAseq datasets that contain CSF immun
 
 Our software is provided for Windows 10 and for Linux as a portable package. This package comes with all the required libraries already included and does not require any installation on your computer. In particular, your existing system configuration will not be changed at all.
 
+The portable package should be usable on most standard systems. However it may not (fully) work with every system configuration. In case, you experience some error, please try running annotateCSF via the "manual way" (see paragraph 3).
+
 Please download the provided installation archive for your operating system from our Online Storage ([v1.0](https://uni-muenster.sciebo.de/s/X3BC6vNhuzEun6i?path=%2FannotateCSF_release)), unzip it with [7zip](https://www.7-zip.org/download.html) into a folder of your choice, and run the `run_aCSF` executable.
 
 Under Linux, we recommend to start `./run_aCSF` from a terminal rather than from your file browser, because otherwise you may not see annotateCSF's console output (status, error messages, etc).
 
-### Alternatively:
+## 3. The manual way (alternative)
 If you want to run the software on a different operating system (e.g. macOS), or customize the source code, then you need a Python 3.9 installation with some packages on your system.
 
 For this purpose, a startup script is provided which, when used for the first time, ensures that a virtual Python environment is set up, all required packages are downloaded and installed, and annotateCSF is started.
@@ -36,7 +38,7 @@ Then, clone the Git repository with `git clone https://github.com/uni-ms/annotat
 ### Alternatively:
 Additionally, a Docker-based setup is also available, but not recommended. Please see [Docker_usage.txt](Docker_usage.txt) for details.
 
-## 3. Testing Dataset
+## 4. Testing Dataset
 For demonstration purposes, we provide a test dataset (from Gate et al., Science, 2021) that you can use to get acquainted with the software. 
 
 Use the data in the folder [test_data](test_data), for your first experiments with annotateCSF.
@@ -44,14 +46,14 @@ Use the data in the folder [test_data](test_data), for your first experiments wi
 Please note that you have to download the measurement data `matrix.mtx` in the folder `test_data/10x_csf` from the following source: https://zenodo.org/record/6913704
 (This will be done by the startup script.)
  
-## 4. The GUI
+## 5. The GUI
 The GUI has been designed to allow for an easy, linear and structured workflow.
 The main window also serves a quick start tutorial, and provides most information that is needed to run the tool.
 Pressing certain buttons will open sub windows to allow for more choices for e. g. plotting.
 ![annotateCSF Main Window](doc/main.png)
 
 
-## 5. Providing input data
+## 6. Providing input data
 The tool requires the data to be in the 10X format, i.e. it requires a matrix.mtx, barcodes.tsv and features.tsv (or genes.tsv from older cellranger versions). This format is the most widely used format and other formats can typically be transferred to the 10X format.
 
 (1) Click on *"I. a. Choose 10X data"* and select a folder, in which your dataset (consisting of `matrix.mtx`, `features.tsv`/`genes.tsv` and `barcodes.tsv`) resides.
@@ -95,7 +97,7 @@ The file shall have the following format:
 | TTTGTCATCAGATAAG-1_22	| Donor_2 |
 | TTTGTCATCGGAGGTA-1_22	| Donor_2 |
 
-## 6. Run Calculation
+## 7. Run Calculation
 When you have selected all necessary files, please click on *"III. Run mapping"*.
 This process may take a while for a rough analysis of the provided dataset.
  
@@ -107,7 +109,7 @@ For basic quality control, a plot will be shown and you can select the desired Q
 
 After confirmation of the thresholds, the mapping process will be performed. This may take some time and depends on your system. Note that the scVI workflows used in aCSF support CUDA for Nvidia graphic cards which accelerates the process by a lot. A progress bar is shown in the console window so you can estimate how long the process will take.
  
-## 7. Interpretation of the output
+## 8. Interpretation of the output
 After the mapping process has completed, you can generate a lot of plots.
 
 A good point to start would be:
