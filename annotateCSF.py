@@ -153,7 +153,7 @@ def plot_umap():
     global genes_to_plot
     genes_to_plot = genes_to_plot.get()
 
-    if (genes_to_plot not in adata_sub2.var.gene_symbols):
+    if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_to_sub.var.gene_symbols)):
         print('You entered ' + genes_to_plot + '. This is either not a valid gene symbol or the gene was not found in the dataset')
         return
 
@@ -275,10 +275,8 @@ def plot_umap():
         sc.tl.umap(adata_sub)
         sc.tl.leiden(adata_sub, resolution = 1.0)
         print(colored('...done!', 'cyan'))
-        try:
+        if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_sub.var.gene_symbols)):
             sc.pl.umap(adata_sub, color=[genes_to_plot], size=40, legend_loc="on data")
-        except:
-            print('You entered ' + genes_to_plot + '. This is either not a valid gene symbol or the gene was not found in the dataset')
 
 # subset to mnc
 def keep_mncs():
