@@ -59,7 +59,7 @@ The tool requires the data to be in the 10X format, i.e. it requires a matrix.mt
 (1) Click on *"I. a. Choose 10X data"* and select a folder, in which your dataset (consisting of `matrix.mtx`, `features.tsv`/`genes.tsv` and `barcodes.tsv`) resides.
 This data is typically obtained from running the CellRanger software on raw fastq-files. If you are working from a Seurat object in R, data in 10X format can easily be written to your disk using the DropletUtils library and subsequently be read into aCSF:
 ```
-DropletUtils::write10xCounts("/path/10x_files", seurat_object@assay$RNA@counts)
+DropletUtils::write10xCounts("/path/10x_files", seurat_object@assays$RNA@counts)
 ```
 
 As a start, you can choose the provided sample folder [10x_csf](test_data/10x_csf) in [test_data](test_data).
