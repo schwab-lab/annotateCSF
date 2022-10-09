@@ -32,9 +32,9 @@ root = Tk()
 #root.iconbitmap("files/icon3.ico")
 root.title('annotate CSF')
 
+# welcome statement
 def welcome_statement():
     print(colored("\nWelcome to aCSF! \nYou can use aCSF for label transfer and subsequent plotting and analysis of your CSF scRNAseq data. Please refer to the reference manual for more detailed information regarding the usage of aCSF.\n", 'yellow'), colored("\nThis tool was built using scanpy, anndata, scVI, and scANVI workflows. When using, please consider citing the original publications as well: \n\nWolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology. \n\nVirshup et al. (2021) anndata: Annotated data, bioRxiv. \n\nGayoso, Lopez, Xing, et al (2022), A Python library for probabilistic analysis of single-cell omics data, Nature Biotechnology. \n\nLopez (2018), Deep generative modeling for single-cell transcriptomics, Nature Methods. \n\nXu, Lopez, Mehlman, et al (2021), Probabilistic harmonization and annotation of single-cell transcriptomics data with deep generative models, Molecular Systems Biology.\n-----------------------------------------------------------------------------------------------------------------------\n", "white" ))
-
 welcome_statement()
 
 # get logo
@@ -47,32 +47,34 @@ image = image.resize((1450,560))
 image =  PIL.ImageTk.PhotoImage(image)
 wl = Label(root, image = image)
 
-#define function to load data into scVI
+# get directory for 10x data
 def get_path():
     path = filedialog.askdirectory(title = 'Select folder with 10X-formatted files')
     path_var.set(value = path)
     print(colored('Data will be loaded from:'))
     print(path_var.get())
 
-#define function to load data into scVI
+# get directory to store .h5ad
 def get_save_path():
     path = filedialog.askdirectory(title = 'Select folder to store your file')
     path_var.set(value = path)
     print(colored('Data will be saved to:'))
     print(path_var.get())
 
+# get genes or metadata to plot in UMAP	
 def get_genes_to_plot():
     genes = simpledialog.askstring(title='Genes to plot', prompt='Name gene or metadata to plot, example1: FOXP3; example2: condition')
     gene_var.set(value=genes)
     global genes_to_plot
     genes_to_plot = gene_var
-
+# get genes to plot in heatmap
 def get_genes_to_plot2():
     genes = simpledialog.askstring(title='Genes to plot', prompt='Please name the desired genes seperated by commas, e. g. "CCR6, FOXP3, CCR5"')
     gene_var.set(value=genes)
     global genes_to_plot
     genes_to_plot = gene_var
 
+# get order of conditions for box-/jitter plot from user
 def get_condition_order():
     print(colored('Available conditions in your dataset:', 'yellow'))
     print(bdata.obs.condition.value_counts().index.tolist())
@@ -81,6 +83,7 @@ def get_condition_order():
     global condition_order
     condition_order = order_var
 
+# get hues to color conditions accordingly in box-/jitter plot	
 def get_hues():
     cols = {}
     col_prompts = list(['Choose first color', 'Choose second color', 'Choose third color', 'Choose fourth color', 'Choose fifth color', 'Choose sixth color', 'Choose seventh color', 'Choose eighth color', 'Choose nineth color', 'Choose tenth'])
@@ -93,6 +96,7 @@ def get_hues():
     global new_hues
     new_hues = hue_var
 
+	
 def plot_heatmap_def():
     plot1 = {' B activated | B IL4R+ | B atypical | Plasmacells': ['CD19', 'CD79A', 'TNFRSF13B'], 'pDCs': ['IL3RA', 'IRF8', 'LAMP5'], 'Monocytes | BAM MRC1+ | BAM EMP3+ | MG CX3CR1+ | MG CCL2+ | MG TREM2hi': ['CD14', 'CD68', 'MS4A7'], 'mDCs CD1c+ | mDCs AXL+SIGLEC6+ | mDCs CLEC9A+': ['CD1C', 'AFF3', 'HLA-DRB5'], 'NK bright | NK dim | TR-NK | ILC': ['NCAM1', 'GNLY', 'XCL1'], 'MAIT | gdT Vd2+ | gdT Vd2- | CD8 CM | CD8 EM HLA-DRA+ | CD8 EM CD160+ | CD8 TRM ITGA1+ | CD8 TRM ITGA1- | CD8 CTL': ['CD8B', 'CD8A', 'GZMH'], 'Tfh | Th17 | Th2/Th22 | Th1 | Tregs | CCR5high Th17.1 | CD4 TEMRA': ['CD4', 'TNFRSF25', 'AQP3']}
     plot2 = {' B activated': ['CD69', 'CXCR4', 'BACH2'], 'B IL4R+': ['IL4R', 'FCER2', 'IGHM'], 'B atypical': ['FCRL5', 'CD1C', 'GPR34'], 'Plasmacells': ['IGHG1', 'SDC1', 'CD38'], 'pDCs': ['IL3RA', 'IRF7', 'IRF8'], 'Monocytes': ['VCAN', 'S100A12', 'CCR2'], 'BAM MRC1+': ['MRC1', 'KCNAB1', 'MARCO'], 'BAM EMP3+': ['EMP3', 'CYP27A1', 'TIMD4'], 'MG CX3CR1+': ['CX3CR1', 'TMEM119', 'P2RY12'], 'MG CCL2+': ['SPP1', 'IRAK2', 'ITGAX'], 'MG TREM2hi': ['TREM2', 'APOC1', 'GPNMB'], 'mDCs CD1c+': ['CD1C', 'CD207', 'CD1E'], 'mDCs AXL+SIGLEC6+': ['SIGLEC6', 'CLIC3', 'CD5D'], 'mDCs CLEC9A+': ['CLEC9A', 'PPP1R14A', 'TMEM14A'], 'NK bright': ['NCAM1', 'KLRC3', 'SPINK2'], 'NK dim': ['EOMES', 'TTC38', 'FGFBP2'], 'TR-NK': ['IKZF3', 'KRT81', 'ITGAE'], 'ILC': ['KIT', 'TNFRSF4', 'IFNGR2'], 'MAIT': ['TRAV1-2', 'NCR3', 'KLRB1'], 'gdT Vd2+': ['TRDC', 'TRGV9', 'ZBTB16'], 'gdT Vd2-': ['TRDV2', 'LSR', 'RTKN2'], 'CD8 CM': ['CCR7', 'NELL2', 'MAL'], 'CD8 EM HLA-DRA+': ['HLA-DRA', 'MSC', 'HLA-DRB5'], 'CD8 EM CD160+': ['CD160', 'FCRL6', 'FGR'], 'CD8 TRM ITGA1+': ['ITGA1', 'ZNF683', 'ITGAE'], 'CD8 TRM ITGA1-': ['NR4A2', 'CEMIP2', 'CXCR4'], 'CD8 CTL': ['GNLY', 'FXYD2', 'GZMB'], 'Th17.1,CD4': ['TEMRA', 'PASK', 'CXCR5'], 'Th17': ['CCR6', 'USP10', 'RORC'], 'Th2/Th22': ['SLC40A1', 'SOCS1', 'CCR4'], 'Th1': ['TBX21', 'TRBC1', 'CXCR3'], 'Tregs': ['FOXP3', 'RTKN2', 'IKZF2'], 'CCR5high Th17.1': ['CXCR6', 'CD69', 'RGS1'], 'CD4 TEMRA': ['GZMH', 'PDCD1', 'CX3CR1']}
@@ -384,7 +388,6 @@ def make_stats():
       lm_res[i]['comparison'] = comparison[0].values
     lm_res2 = pd.concat(lm_res)
     make_stats_window(x=lm_res2)
-
 
 def plot_freq3():
     # dataframe for plots --> extract values from obs
@@ -1179,7 +1182,6 @@ def subwindow4():
 def keep_all():
     subset_choice2.set('Do not subset')
     subset_choice.set('Do not subset')
-
 
 def basic_workflow_window():
     bflow = Toplevel()
