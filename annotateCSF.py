@@ -102,7 +102,8 @@ def plot_heatmap_def():
     plot2 = {' B activated': ['CD69', 'CXCR4', 'BACH2'], 'B IL4R+': ['IL4R', 'FCER2', 'IGHM'], 'B atypical': ['FCRL5', 'CD1C', 'GPR34'], 'Plasmacells': ['IGHG1', 'SDC1', 'CD38'], 'pDCs': ['IL3RA', 'IRF7', 'IRF8'], 'Monocytes': ['VCAN', 'S100A12', 'CCR2'], 'BAM MRC1+': ['MRC1', 'KCNAB1', 'MARCO'], 'BAM EMP3+': ['EMP3', 'CYP27A1', 'TIMD4'], 'MG CX3CR1+': ['CX3CR1', 'TMEM119', 'P2RY12'], 'MG CCL2+': ['SPP1', 'IRAK2', 'ITGAX'], 'MG TREM2hi': ['TREM2', 'APOC1', 'GPNMB'], 'mDCs CD1c+': ['CD1C', 'CD207', 'CD1E'], 'mDCs AXL+SIGLEC6+': ['SIGLEC6', 'CLIC3', 'CD5D'], 'mDCs CLEC9A+': ['CLEC9A', 'PPP1R14A', 'TMEM14A'], 'NK bright': ['NCAM1', 'KLRC3', 'SPINK2'], 'NK dim': ['EOMES', 'TTC38', 'FGFBP2'], 'TR-NK': ['IKZF3', 'KRT81', 'ITGAE'], 'ILC': ['KIT', 'TNFRSF4', 'IFNGR2'], 'MAIT': ['TRAV1-2', 'NCR3', 'KLRB1'], 'gdT Vd2+': ['TRDC', 'TRGV9', 'ZBTB16'], 'gdT Vd2-': ['TRDV2', 'LSR', 'RTKN2'], 'CD8 CM': ['CCR7', 'NELL2', 'MAL'], 'CD8 EM HLA-DRA+': ['HLA-DRA', 'MSC', 'HLA-DRB5'], 'CD8 EM CD160+': ['CD160', 'FCRL6', 'FGR'], 'CD8 TRM ITGA1+': ['ITGA1', 'ZNF683', 'ITGAE'], 'CD8 TRM ITGA1-': ['NR4A2', 'CEMIP2', 'CXCR4'], 'CD8 CTL': ['GNLY', 'FXYD2', 'GZMB'], 'Th17.1,CD4': ['TEMRA', 'PASK', 'CXCR5'], 'Th17': ['CCR6', 'USP10', 'RORC'], 'Th2/Th22': ['SLC40A1', 'SOCS1', 'CCR4'], 'Th1': ['TBX21', 'TRBC1', 'CXCR3'], 'Tregs': ['FOXP3', 'RTKN2', 'IKZF2'], 'CCR5high Th17.1': ['CXCR6', 'CD69', 'RGS1'], 'CD4 TEMRA': ['GZMH', 'PDCD1', 'CX3CR1']}
 
     subsets_in_data = set(adata_sub2.obs.predictions.value_counts().index.values)   # gibt eine Liste der vorhandenen subsets im dataset
-    genes_in_data_set = set(adata_sub2.var.gene_symbols)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
+    print(adata_sub2.raw.var)
+    genes_in_data_set = set(adata_sub2.raw.var.index.values)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
 
     nr_subsets_in_data = 0
     for k in plot1.keys():
@@ -141,7 +142,7 @@ def plot_heatmap_cust():
     genes_to_plot = genes_to_plot.get()
 
     print ('Generating custom heatmap...')
-    genes_in_data_set = set(adata_sub2.var.gene_symbols)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
+    genes_in_data_set = set(adata_sub2.raw.var.index.values)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
     plot_genes = genes_in_data_set.intersection(genes_to_plot.split(', '))
 
     sc.pl.matrixplot(adata_sub2, var_names=list(plot_genes), groupby='predictions', standard_scale='var', dendrogram=True, cmap='inferno')
@@ -157,7 +158,7 @@ def plot_umap():
     global genes_to_plot
     genes_to_plot = genes_to_plot.get()
 
-    if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_to_sub.var.gene_symbols)):
+    if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_to_sub.raw.var.index.values)):
         print('You entered ' + genes_to_plot + '. This is either not a valid gene symbol or the gene was not found in the dataset')
         return
 
@@ -279,7 +280,7 @@ def plot_umap():
         sc.tl.umap(adata_sub)
         sc.tl.leiden(adata_sub, resolution = 1.0)
         print(colored('...done!', 'cyan'))
-        if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_sub.var.gene_symbols)):
+        if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_sub.raw.var.index.values)):
             sc.pl.umap(adata_sub, color=[genes_to_plot], size=40, legend_loc="on data")
 
 # subset to mnc
@@ -635,17 +636,17 @@ def load_user_adata():
 
     # add metadata
     if 'idents' in globals():
-        adata.obs['orig.ident'] = idents['x'].values
+        adata.obs['orig.ident'] = idents.values
     else:
     	adata.obs['orig.ident'] = "sample"
 
     if 'condition' in globals():
-    	adata.obs['condition'] = condition['x'].values
+    	adata.obs['condition'] = condition.values
     else:
     	adata.obs['condition'] = "condition"
 
     if 'study_ident' in globals():
-    	adata.obs['study'] = study_ident['x'].values
+    	adata.obs['study'] = study_ident.values
     else:
     	adata.obs['study'] = "study"
 
@@ -871,17 +872,17 @@ def load_user_adata2():
     adata.layers["counts"] = adata.X.copy()
     # add metadata
     if 'idents' in globals():
-        adata.obs['orig.ident'] = idents['x'].values
+        adata.obs['orig.ident'] = idents.values
     else:
     	adata.obs['orig.ident'] = "sample"
 
     if 'condition' in globals():
-    	adata.obs['condition'] = condition['x'].values
+    	adata.obs['condition'] = condition.values
     else:
     	adata.obs['condition'] = "condition"
 
     if 'study_ident' in globals():
-    	adata.obs['study'] = study_ident['x'].values
+    	adata.obs['study'] = study_ident.values
     else:
     	adata.obs['study'] = "study"
     # find doublets
