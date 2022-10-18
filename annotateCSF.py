@@ -32,9 +32,9 @@ root = Tk()
 #root.iconbitmap("files/icon3.ico")
 root.title('annotate CSF')
 
+# welcome statement
 def welcome_statement():
     print(colored("\nWelcome to aCSF! \nYou can use aCSF for label transfer and subsequent plotting and analysis of your CSF scRNAseq data. Please refer to the reference manual for more detailed information regarding the usage of aCSF.\n", 'yellow'), colored("\nThis tool was built using scanpy, anndata, scVI, and scANVI workflows. When using, please consider citing the original publications as well: \n\nWolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology. \n\nVirshup et al. (2021) anndata: Annotated data, bioRxiv. \n\nGayoso, Lopez, Xing, et al (2022), A Python library for probabilistic analysis of single-cell omics data, Nature Biotechnology. \n\nLopez (2018), Deep generative modeling for single-cell transcriptomics, Nature Methods. \n\nXu, Lopez, Mehlman, et al (2021), Probabilistic harmonization and annotation of single-cell transcriptomics data with deep generative models, Molecular Systems Biology.\n-----------------------------------------------------------------------------------------------------------------------\n", "white" ))
-
 welcome_statement()
 
 # get logo
@@ -47,32 +47,34 @@ image = image.resize((1450,560))
 image =  PIL.ImageTk.PhotoImage(image)
 wl = Label(root, image = image)
 
-#define function to load data into scVI
+# get directory for 10x data
 def get_path():
     path = filedialog.askdirectory(title = 'Select folder with 10X-formatted files')
     path_var.set(value = path)
     print(colored('Data will be loaded from:'))
     print(path_var.get())
 
-#define function to load data into scVI
+# get directory to store .h5ad
 def get_save_path():
     path = filedialog.askdirectory(title = 'Select folder to store your file')
     path_var.set(value = path)
     print(colored('Data will be saved to:'))
     print(path_var.get())
 
+# get genes or metadata to plot in UMAP
 def get_genes_to_plot():
     genes = simpledialog.askstring(title='Genes to plot', prompt='Name gene or metadata to plot, example1: FOXP3; example2: condition')
     gene_var.set(value=genes)
     global genes_to_plot
     genes_to_plot = gene_var
-
+# get genes to plot in heatmap
 def get_genes_to_plot2():
     genes = simpledialog.askstring(title='Genes to plot', prompt='Please name the desired genes seperated by commas, e. g. "CCR6, FOXP3, CCR5"')
     gene_var.set(value=genes)
     global genes_to_plot
     genes_to_plot = gene_var
 
+# get order of conditions for box-/jitter plot from user
 def get_condition_order():
     print(colored('Available conditions in your dataset:', 'yellow'))
     print(bdata.obs.condition.value_counts().index.tolist())
@@ -81,6 +83,7 @@ def get_condition_order():
     global condition_order
     condition_order = order_var
 
+# get hues to color conditions accordingly in box-/jitter plot
 def get_hues():
     cols = {}
     col_prompts = list(['Choose first color', 'Choose second color', 'Choose third color', 'Choose fourth color', 'Choose fifth color', 'Choose sixth color', 'Choose seventh color', 'Choose eighth color', 'Choose nineth color', 'Choose tenth'])
@@ -93,12 +96,14 @@ def get_hues():
     global new_hues
     new_hues = hue_var
 
+
 def plot_heatmap_def():
     plot1 = {' B activated | B IL4R+ | B atypical | Plasmacells': ['CD19', 'CD79A', 'TNFRSF13B'], 'pDCs': ['IL3RA', 'IRF8', 'LAMP5'], 'Monocytes | BAM MRC1+ | BAM EMP3+ | MG CX3CR1+ | MG CCL2+ | MG TREM2hi': ['CD14', 'CD68', 'MS4A7'], 'mDCs CD1c+ | mDCs AXL+SIGLEC6+ | mDCs CLEC9A+': ['CD1C', 'AFF3', 'HLA-DRB5'], 'NK bright | NK dim | TR-NK | ILC': ['NCAM1', 'GNLY', 'XCL1'], 'MAIT | gdT Vd2+ | gdT Vd2- | CD8 CM | CD8 EM HLA-DRA+ | CD8 EM CD160+ | CD8 TRM ITGA1+ | CD8 TRM ITGA1- | CD8 CTL': ['CD8B', 'CD8A', 'GZMH'], 'Tfh | Th17 | Th2/Th22 | Th1 | Tregs | CCR5high Th17.1 | CD4 TEMRA': ['CD4', 'TNFRSF25', 'AQP3']}
     plot2 = {' B activated': ['CD69', 'CXCR4', 'BACH2'], 'B IL4R+': ['IL4R', 'FCER2', 'IGHM'], 'B atypical': ['FCRL5', 'CD1C', 'GPR34'], 'Plasmacells': ['IGHG1', 'SDC1', 'CD38'], 'pDCs': ['IL3RA', 'IRF7', 'IRF8'], 'Monocytes': ['VCAN', 'S100A12', 'CCR2'], 'BAM MRC1+': ['MRC1', 'KCNAB1', 'MARCO'], 'BAM EMP3+': ['EMP3', 'CYP27A1', 'TIMD4'], 'MG CX3CR1+': ['CX3CR1', 'TMEM119', 'P2RY12'], 'MG CCL2+': ['SPP1', 'IRAK2', 'ITGAX'], 'MG TREM2hi': ['TREM2', 'APOC1', 'GPNMB'], 'mDCs CD1c+': ['CD1C', 'CD207', 'CD1E'], 'mDCs AXL+SIGLEC6+': ['SIGLEC6', 'CLIC3', 'CD5D'], 'mDCs CLEC9A+': ['CLEC9A', 'PPP1R14A', 'TMEM14A'], 'NK bright': ['NCAM1', 'KLRC3', 'SPINK2'], 'NK dim': ['EOMES', 'TTC38', 'FGFBP2'], 'TR-NK': ['IKZF3', 'KRT81', 'ITGAE'], 'ILC': ['KIT', 'TNFRSF4', 'IFNGR2'], 'MAIT': ['TRAV1-2', 'NCR3', 'KLRB1'], 'gdT Vd2+': ['TRDC', 'TRGV9', 'ZBTB16'], 'gdT Vd2-': ['TRDV2', 'LSR', 'RTKN2'], 'CD8 CM': ['CCR7', 'NELL2', 'MAL'], 'CD8 EM HLA-DRA+': ['HLA-DRA', 'MSC', 'HLA-DRB5'], 'CD8 EM CD160+': ['CD160', 'FCRL6', 'FGR'], 'CD8 TRM ITGA1+': ['ITGA1', 'ZNF683', 'ITGAE'], 'CD8 TRM ITGA1-': ['NR4A2', 'CEMIP2', 'CXCR4'], 'CD8 CTL': ['GNLY', 'FXYD2', 'GZMB'], 'Th17.1,CD4': ['TEMRA', 'PASK', 'CXCR5'], 'Th17': ['CCR6', 'USP10', 'RORC'], 'Th2/Th22': ['SLC40A1', 'SOCS1', 'CCR4'], 'Th1': ['TBX21', 'TRBC1', 'CXCR3'], 'Tregs': ['FOXP3', 'RTKN2', 'IKZF2'], 'CCR5high Th17.1': ['CXCR6', 'CD69', 'RGS1'], 'CD4 TEMRA': ['GZMH', 'PDCD1', 'CX3CR1']}
 
     subsets_in_data = set(adata_sub2.obs.predictions.value_counts().index.values)   # gibt eine Liste der vorhandenen subsets im dataset
-    genes_in_data_set = set(adata_sub2.var.gene_symbols)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
+    print(adata_sub2.raw.var)
+    genes_in_data_set = set(adata_sub2.raw.var.index.values)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
 
     nr_subsets_in_data = 0
     for k in plot1.keys():
@@ -136,8 +141,8 @@ def plot_heatmap_cust():
     get_genes_to_plot2()
     genes_to_plot = genes_to_plot.get()
 
-    print ('Generating custom heatmap...')    
-    genes_in_data_set = set(adata_sub2.var.gene_symbols)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
+    print ('Generating custom heatmap...')
+    genes_in_data_set = set(adata_sub2.raw.var.index.values)   # extrahiert die Liste von vorhandenen Genen aus dem dataset
     plot_genes = genes_in_data_set.intersection(genes_to_plot.split(', '))
 
     sc.pl.matrixplot(adata_sub2, var_names=list(plot_genes), groupby='predictions', standard_scale='var', dendrogram=True, cmap='inferno')
@@ -153,7 +158,7 @@ def plot_umap():
     global genes_to_plot
     genes_to_plot = genes_to_plot.get()
 
-    if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_to_sub.var.gene_symbols)):
+    if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_to_sub.raw.var.index.values)):
         print('You entered ' + genes_to_plot + '. This is either not a valid gene symbol or the gene was not found in the dataset')
         return
 
@@ -275,7 +280,7 @@ def plot_umap():
         sc.tl.umap(adata_sub)
         sc.tl.leiden(adata_sub, resolution = 1.0)
         print(colored('...done!', 'cyan'))
-        if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_sub.var.gene_symbols)):
+        if ((genes_to_plot not in ['predictions', 'orig.ident', 'condition', 'study']) and (genes_to_plot not in adata_sub.raw.var.index.values)):
             sc.pl.umap(adata_sub, color=[genes_to_plot], size=40, legend_loc="on data")
 
 # subset to mnc
@@ -398,41 +403,75 @@ def plot_freq3():
     # new col names
     anot_df['count'].sum()
     anot_df = anot_df.set_axis(['orig.ident', 'predictions', 'percentage', 'condition'], axis=1)
+    anot_df_recall = anot_df.copy() # ! This is to get back to "all subsets" level when aggregation was done for lineages but all subsets need to be plotted afterwards
     # define dataset to perform statistical analysis in stats_function
     global quant_df
     quant_df = anot_df
-    # plot by condition and celltype
+
+    # set style parameters
     sns.set_style()
     sns.set(rc={'figure.figsize':(30,7)})
     sns.set_style(rc={'grid.color':'0.9', 'axes.facecolor':'white', 'axes.edgecolor':'grey'})
 
-    # plot only necessary subsets
+    # lineages
     if len(anot_df.predictions.value_counts()) > 15:
-        ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = 'turbo', order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
+        #redefine anot_df for lineage
+        sub_to_lin = dict({'Th2/Th22':'CD4 T cells', 'Tfh':'CD4 T cells', 'Th1':'CD4 T cells', 'MG CX3CR1+':'Myeloid cells', 'CD8 EM HLA-DRA+':'CD8 T cells', 'CCR5high Th17.1':'CD4 T cells', 'CD4 TEMRA':'CD4 T cells', 'CD8 TRM ITGA1-':'CD8 T cells', 'CD8 CM':'CD8 T cells', 'BAM EMP3+':'Myeloid cells', 'Th17':'CD4 T cells', 'Tregs':'CD4 T cells', 'BAM MRC1+':'Myeloid cells', 'CD8 EM CD160+':'CD8 T cells', 'CD8 TRM ITGA1+':'CD8 T cells', 'mDCs CD1c+': 'Myeloid cells', 'MG CCL2+':'Myeloid cells', 'MG TREM2hi':'Myeloid cells', 'Monocytes':'Myeloid cells', 'CD8 CTL': 'CD8 T cells', 'pDCs':'pDCs', 'NK bright':'NK cells', 'gdT Vd2+':'CD8 T cells',' B activated':'B cells', 'NK dim':'NK cells', 'B atypical':'B cells', 'gdT Vd2-':'CD8 T cells', 'TR-NK':'NK cells', 'MAIT':'CD8 T cells','ILC':'NK cells','Plasmacells':'B cells', 'mDCs CLEC9A+':'Myeloid cells', 'B IL4R+':'B cells', 'mDCs AXL+SIGLEC6+':'Myeloid cells', 'CD8 prolif':'CD8 T cells'})
+        adata_sub2.obs['lineage'] = adata_sub2.obs['predictions'].replace(sub_to_lin)
+        anot_df = adata_sub2.obs.copy()
+        anot_df['count'] = 1
+        variables = pd.DataFrame({'orig.ident':anot_df['orig.ident'], 'condition':anot_df['condition']}).drop_duplicates()
+        anot_df = anot_df.groupby(['orig.ident', 'lineage', 'condition'],sort=False).agg({'count':'sum'}).groupby(level=0).apply(lambda x: 100*x/x.sum()).groupby(level = ['orig.ident', 'lineage']).max().reset_index()
+        anot_df = anot_df.merge(variables, left_on = 'orig.ident', right_on = 'orig.ident', how='left').drop_duplicates()
+        anot_df['count'].sum()
+        anot_df = anot_df.set_axis(['orig.ident', 'lineage', 'percentage', 'condition'], axis=1)
+        # make plot
+        ax = sns.boxplot(x = 'lineage', y='percentage', data = anot_df, hue='condition', palette = len(anot_df.condition.value_counts())*["white"], dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'})
+        ax = sns.stripplot(x= 'lineage', y='percentage', data = anot_df, alpha=.5, hue = 'condition', dodge=True)
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode='anchor')
+        ax.tick_params(bottom=True, left=True)
+        plt.ylabel('% of sample')
+        plt.show()
+        answer = messagebox.askyesno(title="Store results", message = "Do you want to store quantification results?")
+        if answer == True:
+            path = filedialog.askdirectory(title = 'Where to store quantification results?') + "/lineage_quantification.csv"
+            anot_df.to_csv(path)
+
+    # all subsets
+    anot_df = anot_df_recall
+    if len(anot_df.predictions.value_counts()) > 15:
+        # plot predictions
+        ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"], order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
         ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = 'turbo', hue = 'condition', order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'], dodge=True)
+
     # for only subsets:
     if 'CD8 CM' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
         ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = 'turbo', order=['MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL'])
-        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = 'turbo', hue = 'condition', dodge=True, order= ['MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL'])
+        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = len(anot_df.condition.value_counts())*["white"], hue = 'condition', dodge=True, order= ['MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL'])
     elif ' B activated' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
         ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = 'turbo', order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells'])
-        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = 'turbo', hue = 'condition', dodge=True, order = [' B activated', 'B IL4R+', 'B atypical', 'Plasmacells'])
+        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = len(anot_df.condition.value_counts())*["white"], hue = 'condition', dodge=True, order = [' B activated', 'B IL4R+', 'B atypical', 'Plasmacells'])
     elif 'CD4 TEMRA' in anot_df.predictions.values and 'BAM EMP3+' not in anot_df.predictions.values:
         ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = 'turbo', order=['Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
-        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = 'turbo', hue = 'condition', dodge=True, order=['Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
+        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = len(anot_df.condition.value_counts())*["white"], hue = 'condition', dodge=True, order=['Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
     elif 'BAM MRC1+' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
         ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = 'turbo', order=['Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+'])
-        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = 'turbo', hue = 'condition', dodge=True, order=['Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+'])
+        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = len(anot_df.condition.value_counts())*["white"], hue = 'condition', dodge=True, order=['Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+'])
     elif 'NK bright' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
         ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = 'turbo', order=['NK bright', 'NK dim', 'TR-NK', 'ILC'])
-        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = 'turbo', hue = 'condition', dodge=True, order=['NK bright', 'NK dim', 'TR-NK', 'ILC'])
+        ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = len(anot_df.condition.value_counts())*["white"], hue = 'condition', dodge=True, order=['NK bright', 'NK dim', 'TR-NK', 'ILC'])
+
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode='anchor')
     ax.tick_params(bottom=True, left=True)
     plt.ylabel('% of sample')
     plt.show()
-    print(colored('Close the plot to proceed. You can now choose to change default colors and order of conditions. To view a subset of conditions (e.g. only Control), only type the name of this condition and a color of your choice.', 'yellow'))
+    answer = messagebox.askyesno(title="Store results", message = "Do you want to store quantification results?")
+    if answer == True:
+        path = filedialog.askdirectory(title = 'Where to store quantification results?') + "/lineage_quantification.csv"
+        anot_df.to_csv(path)
 
     # ask whether to change color or not
+    print(colored('Close the plot to proceed. You can now choose to change default colors and order of conditions. To view a subset of conditions (e.g. only Control), only type the name of this condition and a color of your choice.', 'yellow'))
     answer = messagebox.askyesno(title='Change plot', message='Do you want to change colors and condition order?')
 
     if answer == True:
@@ -448,30 +487,76 @@ def plot_freq3():
         hues = new_hues.get()
         hues = eval(hues)
         colors = sns.set_palette(sns.color_palette(hues))
-        # plot only necessary subsets
+        # if no subset was chosen, also show plot by lineage
+        anot_df = anot_df_recall
         if len(anot_df.predictions.value_counts()) > 15:
-            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order,  dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = colors, order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
+            #redefine anot_df for lineage
+            sub_to_lin = dict({'Th2/Th22':'CD4 T cells', 'Tfh':'CD4 T cells', 'Th1':'CD4 T cells', 'MG CX3CR1+':'Myeloid cells', 'CD8 EM HLA-DRA+':'CD8 T cells', 'CCR5high Th17.1':'CD4 T cells', 'CD4 TEMRA':'CD4 T cells', 'CD8 TRM ITGA1-':'CD8 T cells', 'CD8 CM':'CD8 T cells', 'BAM EMP3+':'Myeloid cells', 'Th17':'CD4 T cells', 'Tregs':'CD4 T cells', 'BAM MRC1+':'Myeloid cells', 'CD8 EM CD160+':'CD8 T cells', 'CD8 TRM ITGA1+':'CD8 T cells', 'mDCs CD1c+': 'Myeloid cells', 'MG CCL2+':'Myeloid cells', 'MG TREM2hi':'Myeloid cells', 'Monocytes':'Myeloid cells', 'CD8 CTL': 'CD8 T cells', 'pDCs':'pDCs', 'NK bright':'NK cells', 'gdT Vd2+':'CD8 T cells',' B activated':'B cells', 'NK dim':'NK cells', 'B atypical':'B cells', 'gdT Vd2-':'CD8 T cells', 'TR-NK':'NK cells', 'MAIT':'CD8 T cells','ILC':'NK cells','Plasmacells':'B cells', 'mDCs CLEC9A+':'Myeloid cells', 'B IL4R+':'B cells', 'mDCs AXL+SIGLEC6+':'Myeloid cells', 'CD8 prolif':'CD8 T cells'})
+            adata_sub2.obs['lineage'] = adata_sub2.obs['predictions'].replace(sub_to_lin)
+            anot_df = adata_sub2.obs.copy()
+            anot_df['count'] = 1
+            variables = pd.DataFrame({'orig.ident':anot_df['orig.ident'], 'condition':anot_df['condition']}).drop_duplicates()
+            anot_df = anot_df.groupby(['orig.ident', 'lineage', 'condition'],sort=False).agg({'count':'sum'}).groupby(level=0).apply(lambda x: 100*x/x.sum()).groupby(level = ['orig.ident', 'lineage']).max().reset_index()
+            anot_df = anot_df.merge(variables, left_on = 'orig.ident', right_on = 'orig.ident', how='left').drop_duplicates()
+            anot_df['count'].sum()
+            anot_df = anot_df.set_axis(['orig.ident', 'lineage', 'percentage', 'condition'], axis=1)
+            # make plot
+            ax = sns.boxplot(x = 'lineage', y='percentage', data = anot_df, hue='condition',  dodge=True, fliersize = 0, showmeans=True, hue_order=new_order, palette= len(anot_df.condition.value_counts())*["white"], meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'})
+            ax = sns.stripplot(x= 'lineage', y='percentage', data = anot_df, alpha=.5, hue = 'condition', dodge=True, hue_order=new_order, palette=colors)
+            plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode='anchor')
+            ax.tick_params(bottom=True, left=True)
+            plt.ylabel('% of sample')
+            plt.show()
+        # plot only necessary subsets
+        anot_df = anot_df_recall
+        if len(anot_df.predictions.value_counts()) > 15:
+            anot_df = anot_df_recall
+            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order,  dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"], order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
             ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = colors, hue = 'condition', order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells', 'pDCs', 'Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+', 'NK bright', 'NK dim', 'TR-NK', 'ILC', 'MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL', 'Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'], dodge=True, hue_order = new_order)
+
         # for only subsets:
         if 'CD8 CM' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
-            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = colors, order=['MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL'])
+            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"], order=['MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL'])
             ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = colors, hue_order = new_order, hue = 'condition', dodge=True, order=['MAIT', 'gdT Vd2+', 'gdT Vd2-', 'CD8 CM', 'CD8 EM HLA-DRA+', 'CD8 EM CD160+', 'CD8 TRM ITGA1+', 'CD8 TRM ITGA1-', 'CD8 CTL'])
         elif ' B activated' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
-            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = colors, order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells'])
+            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"], order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells'])
             ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = colors, hue_order = new_order, hue = 'condition', dodge=True, order=[' B activated', 'B IL4R+', 'B atypical', 'Plasmacells'])
         elif 'CD4 TEMRA' in anot_df.predictions.values and 'BAM EMP3+' not in anot_df.predictions.values:
-            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = colors, order=['Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
+            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"], order=['Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
             ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = colors, hue_order = new_order, hue = 'condition', dodge=True, order=['Tfh', 'Th17', 'Th2/Th22', 'Th1', 'Tregs', 'CCR5high Th17.1', 'CD4 TEMRA'])
         elif 'BAM MRC1+' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
-            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = colors, order=['Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+'])
+            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"], order=['Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+'])
             ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = colors, hue_order = new_order, hue = 'condition', dodge=True, order=['Monocytes', 'BAM MRC1+', 'BAM EMP3+', 'MG CX3CR1+', 'MG CCL2+', 'MG TREM2hi', 'mDCs CD1c+', 'mDCs AXL+SIGLEC6+', 'mDCs CLEC9A+'])
         elif 'NK bright' in anot_df.predictions.values and 'Th2/Th22' not in anot_df.predictions.values:
-            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = colors, order=['NK bright', 'NK dim', 'TR-NK', 'ILC'])
+            ax = sns.boxplot(x = 'predictions', y='percentage', data = anot_df, hue='condition', hue_order = new_order, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"], order=['NK bright', 'NK dim', 'TR-NK', 'ILC'])
             ax = sns.stripplot(x= 'predictions', y='percentage', data = anot_df, alpha=.5, palette = colors, hue_order = new_order, hue = 'condition', dodge=True, order=['NK bright', 'NK dim', 'TR-NK', 'ILC'])
+
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode='anchor')
         ax.tick_params(bottom=True, left=True)
         plt.ylabel('% of sample')
         plt.show()
+
+        # if no subset was chosen, also show plot by lineage
+        anot_df = anot_df_recall
+        if len(anot_df.predictions.value_counts()) > 15:
+            #redefine anot_df for lineage
+            sub_to_lin = dict({'Th2/Th22':'CD4 T cells', 'Tfh':'CD4 T cells', 'Th1':'CD4 T cells', 'MG CX3CR1+':'Myeloid cells', 'CD8 EM HLA-DRA+':'CD8 T cells', 'CCR5high Th17.1':'CD4 T cells', 'CD4 TEMRA':'CD4 T cells', 'CD8 TRM ITGA1-':'CD8 T cells', 'CD8 CM':'CD8 T cells', 'BAM EMP3+':'Myeloid cells', 'Th17':'CD4 T cells', 'Tregs':'CD4 T cells', 'BAM MRC1+':'Myeloid cells', 'CD8 EM CD160+':'CD8 T cells', 'CD8 TRM ITGA1+':'CD8 T cells', 'mDCs CD1c+': 'Myeloid cells', 'MG CCL2+':'Myeloid cells', 'MG TREM2hi':'Myeloid cells', 'Monocytes':'Myeloid cells', 'CD8 CTL': 'CD8 T cells', 'pDCs':'pDCs', 'NK bright':'NK cells', 'gdT Vd2+':'CD8 T cells',' B activated':'B cells', 'NK dim':'NK cells', 'B atypical':'B cells', 'gdT Vd2-':'CD8 T cells', 'TR-NK':'NK cells', 'MAIT':'CD8 T cells','ILC':'NK cells','Plasmacells':'B cells', 'mDCs CLEC9A+':'Myeloid cells', 'B IL4R+':'B cells', 'mDCs AXL+SIGLEC6+':'Myeloid cells', 'CD8 prolif':'CD8 T cells'})
+            adata_sub2.obs['lineage'] = adata_sub2.obs['predictions'].replace(sub_to_lin)
+            anot_df = adata_sub2.obs.copy()
+            anot_df['count'] = 1
+            variables = pd.DataFrame({'orig.ident':anot_df['orig.ident'], 'condition':anot_df['condition']}).drop_duplicates()
+            anot_df = anot_df.groupby(['orig.ident', 'lineage', 'condition'],sort=False).agg({'count':'sum'}).groupby(level=0).apply(lambda x: 100*x/x.sum()).groupby(level = ['orig.ident', 'lineage']).max().reset_index()
+            anot_df = anot_df.merge(variables, left_on = 'orig.ident', right_on = 'orig.ident', how='left').drop_duplicates()
+            anot_df['count'].sum()
+            anot_df = anot_df.set_axis(['orig.ident', 'lineage', 'percentage', 'condition'], axis=1)
+            # make plot
+            ax = sns.boxplot(x = 'lineage', y='percentage', data = anot_df, hue='condition', hue_order=hues, dodge=True, fliersize = 0, showmeans=True, meanprops={'marker':'+', 'markersize':'6', 'markeredgewidth':'1.5', 'markeredgecolor':'#777777'}, palette = len(anot_df.condition.value_counts())*["white"])
+            ax = sns.stripplot(x= 'lineage', y='percentage', data = anot_df, alpha=.5, palette = colors, hue = 'condition', dodge=True, hue_order=hues)
+            plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode='anchor')
+            ax.tick_params(bottom=True, left=True)
+            plt.ylabel('% of sample')
+            plt.show()
+
         get_stats_adata()
         make_stats()
     else:
@@ -509,7 +594,6 @@ def write_data():
         print(colored('...done!', 'cyan'))
 
 # main scvi workflow
-
 
 def load_user_adata():
 
@@ -552,17 +636,17 @@ def load_user_adata():
 
     # add metadata
     if 'idents' in globals():
-        adata.obs['orig.ident'] = idents['x'].values
+        adata.obs['orig.ident'] = idents.values
     else:
     	adata.obs['orig.ident'] = "sample"
 
     if 'condition' in globals():
-    	adata.obs['condition'] = condition['x'].values
+    	adata.obs['condition'] = condition.values
     else:
     	adata.obs['condition'] = "condition"
 
     if 'study_ident' in globals():
-    	adata.obs['study'] = study_ident['x'].values
+    	adata.obs['study'] = study_ident.values
     else:
     	adata.obs['study'] = "study"
 
@@ -733,7 +817,6 @@ def load_user_adata():
     vae_adata_red = scvi.model.SCANVI.load_query_data(adata_red, vae_scanvi_model)
 
     # "Mapping labels"
-    #message_info5()
     print(colored('Starting mapping process... This may take a while. Using GPU via cuda recommended.', 'red'))
     vae_adata_red.train(max_epochs = 400, early_stopping = True, check_val_every_n_epoch = 1, plan_kwargs=dict(weight_decay=0.0), early_stopping_min_delta =0.01, early_stopping_patience = 15)
     adata_red.obsm['X_scANVI'] = vae_adata_red.get_latent_representation()
@@ -789,17 +872,17 @@ def load_user_adata2():
     adata.layers["counts"] = adata.X.copy()
     # add metadata
     if 'idents' in globals():
-        adata.obs['orig.ident'] = idents['x'].values
+        adata.obs['orig.ident'] = idents.values
     else:
     	adata.obs['orig.ident'] = "sample"
 
     if 'condition' in globals():
-    	adata.obs['condition'] = condition['x'].values
+    	adata.obs['condition'] = condition.values
     else:
     	adata.obs['condition'] = "condition"
 
     if 'study_ident' in globals():
-    	adata.obs['study'] = study_ident['x'].values
+    	adata.obs['study'] = study_ident.values
     else:
     	adata.obs['study'] = "study"
     # find doublets
@@ -1103,7 +1186,6 @@ def subwindow4():
 def keep_all():
     subset_choice2.set('Do not subset')
     subset_choice.set('Do not subset')
-
 
 def basic_workflow_window():
     bflow = Toplevel()
