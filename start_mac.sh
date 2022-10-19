@@ -36,7 +36,7 @@ echo "Waiting for annotateCSF to be closed . . . "
 python annotateCSF.py
 
 
-if [ $1 = "-create" ]; then
+if [ "$1" == "-create" ]; then
     echo "Installing pyInstaller"
     echo "----------------------"
     pip install --no-cache-dir pyinstaller==5.0.1
