@@ -118,7 +118,7 @@ A good point to start would be:
    Click on *"IV. a. Plot UMAP"* and select *"Do not subset"*.
    A window will open asking for specifications. In the simplest case, you select "predictions" in field I. and press plot. This generates a UMAP plot colored according to the predicted labels. If you want to add more information, e.g. gene expression, you can click the button "Add more info" (II.). Here, choose a gene symbol from the provided list or simply enter one yourself. You can also choose to plot more metadata, e.g. the medical conditions or the study identifier. You always have to make a choice and click confirm after choosing the desired information. Fields III. - VI. help you to customize the plot further, e. g. by selecting palettes or choosing the point size. There are also three further fields that are meant for subsetting your data, in case you only want to view data from a certain sample or a certain condition. Note that you can also generate UMAP plots containing only cells from a chosen lineage, e.g. from CD4 T cells. In this case, you do not click "Do not subset" in the first place, but choose the desired lineage. This option will subset the data accordingly and compute a new UMAP for which also a model will need to be run (integration willl be based on scVI or scanpy). This will take some time again, but usually provides a better view than simply using the UMAP coordinates generated from the main model. Below you can see an example for the kind of visualization that can be achieved:
 
-![annotateCSF Main Window](doc/UMAP_example.png)
+![annotateCSF Main Window](doc/UMAP_example.PNG)
       
 
 2. **Quantification plot:**
