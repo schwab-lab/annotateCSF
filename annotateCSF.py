@@ -932,7 +932,7 @@ def map_to_query():
         plt.show(block = False)
         doublet_thresh = simpledialog.askfloat(title = "Doublet threshold", prompt = "Type desired doublet threshold (max value)")
         plt.close()
-        adata = adata[adata.obs.doublet_score < 0.2]
+        adata = adata[adata.obs.doublet_score < doublet_tresh]
         print(colored('Doublets found!', 'cyan'))
 
     # normalization for HVG calculation
@@ -1456,21 +1456,25 @@ def dge_betw_celltypes():
     dge_threshs = Toplevel()
     # lfc min
     lfc_min = StringVar()
+    lfc_min.set("0.15")
     Message(dge_threshs, text = 'Minimum log-fold change:', width=250).pack()
     lfc_entry = Entry(dge_threshs, textvariable = lfc_min)
     lfc_entry.pack()
     # bayes min
     bayes_min = StringVar()
+    bayes_min.set("2.5")
     Message(dge_threshs, text = 'Minimum bayes factor:', width=250).pack()
     bayes_entry = Entry(dge_threshs, textvariable = bayes_min)
     bayes_entry.pack()
     # non_zeros min
     non_zero = StringVar()
+    non_zero.set("0.2")
     Message(dge_threshs, text = 'Fraction non-zero counts [0.0-1.0]:', width=250).pack()
     non_zero_entry = Entry(dge_threshs, textvariable = non_zero)
     non_zero_entry.pack()
     # max no of markers
     markers_max = StringVar()
+    markers_max.set("5")
     Message(dge_threshs, text = 'Maximum number of markers per cluster:', width=250).pack()
     markers_entry = Entry(dge_threshs, textvariable = markers_max)
     markers_entry.pack()
