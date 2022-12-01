@@ -71,7 +71,7 @@ Metadata .tsv files for e.g. medical condition can also be exported from a Seura
 `write.table(seurat_object$condition, "your_condition.tsv")`.
 
 The file should have the following format:
-| X			|	  |
+| Condition		|	  |
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Control |
 | AAACGGGAGGTTACCT-1_2	| Control |
@@ -80,7 +80,7 @@ The file should have the following format:
 
 (3) (optional) In case, you have data from more than one study, click on *"II. b. Choose study.tsv"* and select a tsv-file, providing a study identifier for each sequence. You can later visualize this in UMAP plots and see whether the data has been well integrated with regard to the different studies.
 The file shall have the following format:
-| X			|	 |
+| Study			|	 |
 |-----------------------|--------|
 | AAACCTGAGCATGGCA-1_2	| study1 |
 | AAACGGGAGGTTACCT-1_2	| study1 |
@@ -90,7 +90,7 @@ The file shall have the following format:
 (4) Click on *"II. c. Choose idents.tsv"* and select a tsv-file containing a sample identifier for each sequence.
 Of course, you can again chose the provided sample [file](test_data/idents_csf.tsv).
 The file shall have the following format:
-| X			|	  |
+| Idents		|	  |
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Donor_1 |
 | AAACGGGAGGTTACCT-1_2	| Donor_1 |
@@ -116,9 +116,11 @@ A good point to start would be:
 1. **UMAP predictions:**
 
    Click on *"IV. a. Plot UMAP"* and select *"Do not subset"*.
-   A window will open asking for specifications. In the simplest case, you select "predictions" in field I. and press plot. This generates a UMAP plot colored according to the predicted labels. If you want to add more information, e.g. gene expression, you can click the button "Add more info" (II.). Here, choose a gene symbol from the provided list or simply enter one yourself. You can also choose to plot more metadata, e.g. the medical conditions or the study identifier. You always have to make a choice and click confirm after choosing the desired information. Fields III. - VI. help you to customize the plot further, e. g. by selecting palettes or choosing the point size. There are also three further fields that are meant for subsetting your data, in case you only want to view data from a certain sample or a certain condition. Note that you can also generate UMAP plots containing only cells from a chosen lineage, e.g. from CD4 T cells. In this case, you do not click "Do not subset" in the first place, but choose the desired lineage. This option will subset the data accordingly and compute a new UMAP for which also a model will need to be run (integration will be based on scVI or scanpy). This will take some time again, but usually provides a better view than simply using the UMAP coordinates generated from the main model. Below you can see an example for the kind of visualization that can be achieved:
+   A window will open asking for specifications. In the simplest case, you select "predictions" in field **I.** and press plot. This generates a UMAP plot colored according to the predicted labels. If you want to add more information, e.g. gene expression, you can click the button "Add more info" (**II.**). Here, choose a gene symbol from the provided list or simply enter one yourself. You can also choose to plot more metadata, e.g. the medical conditions or the study identifier. You always have to make a choice and click confirm after choosing the desired information. Fields **III. - VI.** help you to customize the plot further, e. g. by selecting palettes or choosing the point size. There are also three further fields (**VII. - IX.**) that are meant for subsetting your data, in case you only want to view data from a certain sample or a certain condition. 
 
-![annotateCSF Main Window](doc/UMAP_example.PNG)
+Note that you can also generate UMAP plots containing only cells from a chosen lineage, e.g. from CD4 T cells. In this case, you do not click "Do not subset" in the first place, but choose the desired lineage. This option will subset the data accordingly and compute a new UMAP for which also a model will need to be run (integration will be based on scVI or scanpy). This will take some time again, but usually provides a better view than simply using the UMAP coordinates generated from the main model. Below you can see an example for the kind of visualization that can be achieved:
+
+![annotateCSF Main Window](doc/UMAP_example.png)
       
 
 2. **Quantification plot:**
@@ -140,6 +142,28 @@ To check for differentially expressed genes between cell types or between medica
 
 ![annotateCSF Main Window](doc/DGE.PNG)
 
-## 9. Troubleshooting
+## 9. Miscellaneous functions 
+
+For user convenience, we added some more functions:
+
+1. **Prepare data:**
+This function is useful when you just obtained your 10X formatted output data from the cellranger software. aCSF expects all your data to be contained in a single folder holding the matrix.mtx, barcodes.tsv, and features.tsv/genes.tsv files, while metadata regarding sample identity etc. is provided via singular .tsv files. However, typically you have data from different samples and sequencing runs in seperate folders. In this case you can use the "Prepare data" function to combine the data from these folders and assign metadata values to each file, i.e. assign the sample identity, the medical condition, and the study belonging individually, and aCSF will combine this information into single metadata .tsv files, so they are compatible with the format that is required for aCSF.
+
+2. **Enrichment analysis:**
+With this function you can load a .tsv files holding gene expression signatures and aCSF will perform scoring across cells based on a function from scanpy. The score will then also be available for plotting via the UMAP function. For instance, you may check whether cells classified as Th17 or Tfh CD4 T cells actually express the known marker genes of these cell types, or if the microglia-like population expresses microglia signature genes. Just upload a .tsv file containing a list of gene symbols and check it on the UMAP plot, the format should be as simple as:
+
+|P2RY12		|
+|TMEM119	|
+|SPP1		|
+|TREM2		| 
+|...		|
+
+An exemplary UMAP plot showing the enriched scores can be seen below:
+![annotateCSF Main Window](doc/enrichment_example.PNG)
+
+3. **scanpy/scVI workflow:**
+This function allows you to perform a basic scanpy/scVI workflow with user-defined parameters. This function is useful to explore data that is based on sample types other than CSF or when you suspect cell types to be present that are not part of the aCSF reference dataset from Ostkamp et al. (2022). You can perform a basic scVI integration analysis, compute clusters using the leiden algorithm and annotate clusters yourself.  
+
+## 10. Troubleshooting
 Under construction...
 
