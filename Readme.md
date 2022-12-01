@@ -107,20 +107,20 @@ First, you can choose whether you want to perform doublet exclusion using scrubl
 
 (**Caution:** The threshold selection window may open behind the overview plots on some systems and/or the *"Apply thresholds"* button may be out of the window’s borders. Please adjust the window’s size in this case.)
 
-After confirmation of the thresholds, the mapping process will be performed. This may take some time and depends on your system. Note that the scVI workflows used in aCSF support CUDA for Nvidia graphic cards which accelerates the process by a lot. Progress bars will be shown in the console window, which will finish to 100% for first two progress bars (pre-training). The third progress bar may run until 100%, but finish earlier: This is intended and is meant to avoid overfitting. 
+After confirmation of the thresholds, the mapping process will be performed. This may take some time and depends on your system. Note that the scVI workflows used in aCSF support CUDA for Nvidia graphic cards which accelerates the process by a lot. Progress bars will be shown in the console window, which will finish to 100% for first two progress bars (pre-training). The third progress bar may run until 100%, but could also finish earlier: This is intended and is meant to avoid overfitting. 
  
 ## 8. Visualization, analysis, and interpretation of the output
 After the mapping process has completed, you can perform further analyses and visualize your data.
 
 A good point to start would be:
-1. **UMAP predictions:**
+1. **UMAP plot:**
 
    Click on *"IV. a. Plot UMAP"* and select *"Do not subset"*.
    A window will open asking for specifications. In the simplest case, you select "predictions" in field **I.** and press plot. This generates a UMAP plot colored according to the predicted labels. If you want to add more information, e.g. gene expression, you can click the button "Add more info" (**II.**). Here, choose a gene symbol from the provided list or simply enter one yourself. You can also choose to plot more metadata, e.g. the medical conditions or the study identifier. You always have to make a choice and click confirm after choosing the desired information. Fields **III. - VI.** help you to customize the plot further, e. g. by selecting palettes or choosing the point size. There are also three further fields (**VII. - IX.**) that are meant for subsetting your data, in case you only want to view data from a certain sample or a certain condition. 
 
    Note that you can also generate UMAP plots containing only cells from a chosen lineage, e.g. from CD4 T cells. In this case, you do not click "Do not subset" in the first place, but choose the desired lineage. This option will subset the data accordingly and compute a new UMAP for which also a model will need to be run (integration will be based on scVI or scanpy). This will take some time again, but usually provides a better view than simply using the UMAP coordinates generated from the main model. Below you can see an example for the kind of visualization that can be achieved:
 
-![annotateCSF Main Window](doc/UMAP_example.PNG)
+   ![annotateCSF Main Window](doc/UMAP_example.PNG)
       
 
 2. **Quantification plot:**
@@ -128,7 +128,7 @@ A good point to start would be:
    Click on *"IV. b. Plot quantifications"* and select *"Do not subset"*.
    You will see another window, which allows you to choose from several plots:
 
-![annotateCSF Main Window](doc/plots.png)
+   ![annotateCSF Main Window](doc/plots.png)
  
 Click on *"Boxplot by celltype and condition"* for a quantification box plot. You will be asked whether you want to save the quantification results, you can do this if you wish to perform any further analyses on this data. Boxplots by celltype and condition can also be customized and you will be asked whether you want to perform a basic statistical analysis using linear models. The results of this analysis can also be saved as spreadsheets.
 
@@ -140,7 +140,7 @@ If you feel that some plots are missing or have some ideas to improve the softwa
 
    To check for differentially expressed genes between cell types or between medical conditions, you can perform differential gene expression analysis. Simply choose the desired comparisons, this can also be freely customized using "Custom DGE". DGE analysis will then be performed and you will be asked to provide thresholds for plotting a heatmap.
 
-![annotateCSF Main Window](doc/DGE.PNG)
+   ![annotateCSF Main Window](doc/DGE.PNG)
 
 ## 9. Miscellaneous functions 
 
@@ -154,15 +154,15 @@ For user convenience, we added some more functions:
 
    With this function you can load a .tsv files holding gene expression signatures and aCSF will perform scoring across cells based on a function from scanpy. The score will then also be available for plotting via the UMAP function. For instance, you may check whether cells classified as Th17 or Tfh CD4 T cells actually express the known marker genes of these cell types, or if the microglia-like population expresses microglia signature genes. Just upload a .tsv file containing a list of gene symbols and check it on the UMAP plot, the format should be as simple as:
 
-| P2RY12        |
-|---------------|
-| TMEM119	|
-| SPP1		|
-| TREM2		| 
-| ...		|
+   |P2RY12      |
+   |------------|
+   |TMEM119	|
+   |SPP1	|
+   |TREM2	| 
+   |...		|
 
 An exemplary UMAP plot showing the enriched scores can be seen below:
-![annotateCSF Main Window](doc/enrichment_example.PNG)
+   ![annotateCSF Main Window](doc/enrichment_example.PNG)
 
 3. **scanpy/scVI workflow:**
    
