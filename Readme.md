@@ -2,11 +2,7 @@
 #### A user interface-driven workflow for the annotation of cerebrospinal fluid leukocytes in scRNAseq datasets
 
 ## 1. What is annotateCSF?
-<<<<<<< HEAD
 annotateCSF or aCSF is a tool for annotation of scRNAseq datasets that contain cerebrospinal fluid (CSF) immune cells and wraps a user interface around a context-optimized workflow for scanpy (Wolf et al., 2018), scVI-tools (Lopez et al., 2018; Gayoso et al., 2022), and scANVI (Xu et al., 2021). The dataset that is used as a reference was compiled using several published CSF scRNAseq datasets and is described in detail in Ostkamp et al., Sci Transl Med (2022). It is also possible to conduct downstream exploration and analysis with UMAP plots, differential gene and -abundance analysis and so on. The aim of aCSF is to assist researchers with the analysis of their own datasets and to provide a reference atlas that is specifically suited for the annotation of CSF leukocytes unlike atlases based on peripheral blood that do not correctly reflect leukocyte heterogeneity of CSF. 
-=======
-annotateCSF or aCSF is a tool for annotation of scRNAseq datasets that contain cerebrospinal fluid (CSF) immune cells and wraps a user interface around a context-optimized workflow for scanpy (Wolf et al., 2018), scVI-tools (Lopez et al., 2018; Gayoso et al., 2022), and scANVI (Xu et al., 2021). The dataset that is used as a reference was compiled using several published CSF scRNAseq datasets and is described in detail in Ostkamp et al., Sci Transl Med (2022). It is also possible to conduct downstream exploration and analysis with UMAP plots, differential gene and -abundance analysis and so on. The aim of aCSF is to assist researchers with the analysis of their own datasets and to provide a reference atlas that is specifically suited for the annotation of CSF leukocytes unlike atlases based on peripheral blood that do not correctly reflect leukocyte heterogeneity of CSF.
->>>>>>> test_branch_cw
 
 ## 2. Installation / Starting the software
 
@@ -75,11 +71,7 @@ Metadata .tsv files for e.g. medical condition can also be exported from a Seura
 `write.table(seurat_object$condition, "your_condition.tsv")`.
 
 The file should have the following format:
-<<<<<<< HEAD
-| Condition			|	  |
-=======
 | Condition		|	  |
->>>>>>> test_branch_cw
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Control |
 | AAACGGGAGGTTACCT-1_2	| Control |
@@ -98,11 +90,7 @@ The file shall have the following format:
 (4) Click on *"II. c. Choose idents.tsv"* and select a tsv-file containing a sample identifier for each sequence.
 Of course, you can again chose the provided sample [file](test_data/idents_csf.tsv).
 The file shall have the following format:
-<<<<<<< HEAD
-| Identity			|	  |
-=======
 | Idents		|	  |
->>>>>>> test_branch_cw
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Donor_1 |
 | AAACGGGAGGTTACCT-1_2	| Donor_1 |
