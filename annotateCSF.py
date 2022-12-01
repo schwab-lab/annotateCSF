@@ -378,9 +378,9 @@ def plot_umap():
     choose_pal_cont = ttk.Combobox(cb_genes, values = pals_cont, state = "viridis", textvariable = pal_cont_var)
     choose_pal_cont.grid(column = 4, row = 2)
     pal_cat_label = Label(cb_genes, text = "IV. Choose categorical color palette")
-    pal_cat_label.grid(column = 4, row = 4)
+    pal_cat_label.grid(column = 4, row = 3)
     choose_pal_cat = ttk.Combobox(cb_genes, values = pals_cat, state = "glasbey_light", textvariable = pal_cat_var)
-    choose_pal_cat.grid(column =4, row = 5)
+    choose_pal_cat.grid(column =4, row = 4)
     # point size and legend size
     pt_size = StringVar()
     pt_size.set(50)
@@ -391,9 +391,32 @@ def plot_umap():
     lg_size = StringVar()
     lg_size.set(10)
     lg_size_label = Label(cb_genes, text = "VI. Choose legend fontsize")
-    lg_size_label.grid(column = 6, row = 4)
+    lg_size_label.grid(column = 6, row = 3)
     lg_size_entry = Entry(cb_genes, textvariable = lg_size)
-    lg_size_entry.grid(column = 6, row = 5)
+    lg_size_entry.grid(column = 6, row = 4)
+    # restrict plot to...
+    # restrict to certain ident
+    global adata_copy
+    Label(cb_genes, text = "VII. Restrict to specific sample").grid(column=7, row=1)
+    restrict_idents_options = list(adata_copy.obs['orig.ident'].value_counts().index.values)
+    restrict_idents_choice = StringVar()
+    restrict_idents_choice.set("Choose")
+    restrict_idents_box = ttk.Combobox(cb_genes, values = restrict_idents_options, state = "Choose", textvariable = restrict_idents_choice)
+    restrict_idents_box.grid(column = 7, row = 2)
+    # restrict to certain condition
+    Label(cb_genes, text = "VIII. Restrict to specific condition").grid(column=7, row=3)
+    restrict_condition_options = list(adata_copy.obs['condition'].value_counts().index.values)
+    restrict_condition_choice = StringVar()
+    restrict_condition_choice.set("Choose")
+    restrict_condition_box = ttk.Combobox(cb_genes, values = restrict_condition_options, state = "Choose", textvariable = restrict_condition_choice)
+    restrict_condition_box.grid(column = 7, row = 4)
+    # restrict to certain study
+    Label(cb_genes, text = "IX. Restrict to specific study").grid(column=8, row=1)
+    restrict_study_options = list(adata_copy.obs['study'].value_counts().index.values)
+    restrict_study_choice = StringVar()
+    restrict_study_choice.set("Choose")
+    restrict_study_box = ttk.Combobox(cb_genes, values = restrict_study_options, state = "Choose", textvariable = restrict_study_choice)
+    restrict_study_box.grid(column = 8, row = 2)
 
     # define values for combobox
     metadata = ['predictions', 'lineage', 'predictions_l2', 'condition', 'orig.ident', 'study'] # all available metadata
@@ -403,6 +426,9 @@ def plot_umap():
     # add gene scores if computed before...
     if "chosen_scores" in globals():
         available_info = chosen_scores + available_info
+    # add IR info if available...
+    if "ir_info" in globals():
+        available_info = ir_info + available_info
 
     # genes
     chosen_genes = StringVar()
@@ -421,7 +447,7 @@ def plot_umap():
     # make button to execute plot. Waits for activation.
     activate_plot = IntVar()
     plot_button = Button(cb_genes, text = "PLOT!", command = lambda:[activate_plot.set(1)])
-    plot_button.grid(column = 6, row = 6)
+    plot_button.grid(column = 8, row =4)
 
     # Add more info to plot. Requires genes_to_plot to be defined
     def add_info():
@@ -429,13 +455,13 @@ def plot_umap():
             # combobox to add further info
             chosen_genes_add = StringVar()
             choose_genes_add = ttk.Combobox(cb_genes, values = available_info, state = "predictions", textvariable = chosen_genes_add)
-            choose_genes_add.grid(column = 1, row = 6)
+            choose_genes_add.grid(column = 1, row = 5)
             # confirm adding by pressing button
             confirm_dummy = DoubleVar()
             def set_confirm_dummy():
                 confirm_dummy.set(random.uniform(0,9999999))
             confirm_add_button = Button(cb_genes, text = "Confirm", command = set_confirm_dummy)
-            confirm_add_button.grid(column = 1, row = 7)
+            confirm_add_button.grid(column = 1, row = 6)
             # wait until button is pressed
             confirm_add_button.wait_variable(confirm_dummy) # waits for pressing confirm_add_button. Button generates random float, therefore variable will always get changed upon button press to stop wait_variable command
             # after button press, get chosen gene
@@ -446,12 +472,31 @@ def plot_umap():
             print("Select a medadata column or gene from the dropdown menu first")
 
     add_info_label = Label(cb_genes, text="II. Choose further data and hit confirm")
-    add_info_label.grid(column = 1, row = 4)
+    add_info_label.grid(column = 1, row = 3)
     add_info_button = Button(cb_genes, text = "Add more info", command = lambda:[add_info()])
-    add_info_button.grid(column = 1, row = 5)
+    add_info_button.grid(column = 1, row = 4)
 
     # stop waiting...
     plot_button.wait_variable(activate_plot)
+
+    # to retrieve later...
+    adata_copy_copy = adata_copy.copy()
+
+    # restrict data
+    if (restrict_idents_choice.get() == "Choose") & (restrict_study_choice.get() == "Choose") & (restrict_condition_choice.get() == "Choose"):
+        pass
+    elif (restrict_idents_choice.get() != "Choose") & (restrict_study_choice.get() == "Choose") & (restrict_condition_choice.get() == "Choose"):
+        adata_copy = adata_copy[adata_copy.obs['orig.ident']==restrict_idents_choice.get()]
+    elif (restrict_idents_choice.get() != "Choose") & (restrict_study_choice.get() != "Choose") & (restrict_condition_choice.get() == "Choose"):
+        adata_copy = adata_copy[(adata_copy.obs['orig.ident']==restrict_idents_choice.get()) & (adata_copy.obs['study']==restrict_study_choice.get())]
+    elif (restrict_idents_choice.get() != "Choose") & (restrict_study_choice.get() != "Choose") & (restrict_condition_choice.get() != "Choose"):
+        adata_copy = adata_copy[(adata_copy.obs['orig.ident']==restrict_idents_choice.get()) & (adata_copy.obs['study']==restrict_study_choice.get()) & (adata_copy.obs['condition']==restrict_condition_choice.get())]
+    elif (restrict_idents_choice.get() == "Choose") & (restrict_study_choice.get() == "Choose") & (restrict_condition_choice.get() != "Choose"):
+        adata_copy = adata_copy[adata_copy.obs['condition']==restrict_condition_choice.get()]
+    elif (restrict_idents_choice.get() == "Choose") & (restrict_study_choice.get() != "Choose") & (restrict_condition_choice.get() == "Choose"):
+        adata_copy = adata_copy[adata_copy.obs['study']==restrict_study_choice.get()]
+    elif (restrict_idents_choice.get() != "Choose") & (restrict_study_choice.get() == "Choose") & (restrict_condition_choice.get() != "Choose"):
+        adata_copy = adata_copy[(adata_copy.obs['orig.ident']==restrict_idents_choice.get()) & (adata_copy.obs['condition']==restrict_condition_choice.get())]
 
     ## Execute plot
     if subset == 'Do not subset':
@@ -518,27 +563,32 @@ def plot_umap():
         sc.tl.leiden(adata_sub, resolution = 1.0)
         print(colored('...done!', 'cyan'))
         print(pt_size.get(), pal_cat_var.get(), pal_cont_var.get(), lg_size.get())
-        sc.pl.umap(adata_sub, color = genes_to_plot, size=int(pt_size.get()), palette=pal_cat_var.get(), cmap=pal_cont_var.get(), legend_loc="on data", legend_fontsize = int(lg_size.get()))
         try:
             print("This should be the subset plot...")
             if pal_cat_var.get() == "glasbey_light":
                 sc.pl.umap(adata_sub, color = genes_to_plot, size=int(pt_size.get()), palette=glasbey_light, cmap=pal_cont_var.get(), legend_loc="on data", legend_fontsize = int(lg_size.get()))
+                adata_copy = adata_copy_copy
             else:
                 sc.pl.umap(adata_sub, color = genes_to_plot, size=int(pt_size.get()), palette=pal_cat_var.get(), cmap=pal_cont_var.get(), legend_loc="on data", legend_fontsize = int(lg_size.get()))
+                adata_copy = adata_copy_copy
         except:
             #print('You entered ' + genes_to_plot + '. This is either not a valid gene symbol or the gene was not found in the dataset')
             print("Some error occured...")
+            adata_copy = adata_copy_copy
     # If workflow has been run for subset already re-use that data
     else:
         if (subset != 'Do not subset') and ('adata_sub' in globals()) and (subset in adata_sub.obs.mnc_lineage.values):
             try:
                 if pal_cat_var.get() == "glasbey_light":
                     sc.pl.umap(adata_sub, color = genes_to_plot, size=int(pt_size.get()), palette=glasbey_light, cmap=pal_cont_var.get(), legend_loc="on data", legend_fontsize = int(lg_size.get()))
+                    adata_copy = adata_copy_copy
                 else:
                     sc.pl.umap(adata_sub, color = genes_to_plot, size=int(pt_size.get()), palette=pal_cat_var.get(), cmap=pal_cont_var.get(), legend_loc="on data", legend_fontsize = int(lg_size.get()))
+                    adata_copy = adata_copy_copy
             except:
                 #print('You entered ' + genes_to_plot + '. This is either not a valid gene symbol or the gene was not found in the dataset')
                 print("Some error occured...")
+                adata_copy = adata_copy_copy
 
     if 'adata_sub' in globals():
         print('adata_sub is in globals...')
@@ -595,10 +645,13 @@ def plot_umap():
         try:
             if pal_cat_var.get() == "glasbey_light":
                 sc.pl.umap(adata_sub, color = genes_to_plot, size=int(pt_size.get()), palette=glasbey_light, cmap=pal_cont_var.get(), legend_loc="on data", legend_fontsize = int(lg_size.get()))
+                adata_copy = adata_copy_copy
             else:
                 sc.pl.umap(adata_sub, color = genes_to_plot, size=int(pt_size.get()), palette=pal_cat_var.get(), cmap=pal_cont_var.get(), legend_loc="on data", legend_fontsize = int(lg_size.get()))
+                adata_copy = adata_copy_copy
         except:
             print("Gene or metadata not available...")
+    adata_copy = adata_copy_copy
 
 # subset to mnc
 def keep_mncs():
@@ -930,9 +983,11 @@ def map_to_query():
             adata = adata.concatenate(batch_list[x])
         plt.hist(adata.obs.doublet_score, bins = 50)
         plt.show(block = False)
-        doublet_thresh = simpledialog.askfloat(title = "Doublet threshold", prompt = "Type desired doublet threshold (max value)")
+        doublet_thresh = DoubleVar()
+        doublet_thresh_set = simpledialog.askfloat(title = "Doublet threshold", prompt = "Type desired doublet threshold (max value)", initialvalue=0.3)
+        doublet_thresh.set(doublet_thresh_set)
         plt.close()
-        adata = adata[adata.obs.doublet_score < 0.2]
+        adata = adata[adata.obs.doublet_score < doublet_thresh.get()]
         print(colored('Doublets found!', 'cyan'))
 
     # normalization for HVG calculation
@@ -1150,9 +1205,11 @@ def scVI_workflow():
             adata = adata.concatenate(batch_list[x])
         plt.hist(adata.obs.doublet_score, bins = 50)
         plt.show(block = False)
-        doublet_thresh = simpledialog.askfloat(title = "Doublet threshold", prompt = "Type desired doublet threshold (max value)")
+        doublet_thresh = DoubleVar()
+        doublet_thresh_set = simpledialog.askfloat(title = "Doublet threshold", prompt = "Type desired doublet threshold (max value)")
+        doblet_thresh.set(doublet_thresh_set)
         plt.close()
-        adata = adata[adata.obs.doublet_score < 0.2]
+        adata = adata[adata.obs.doublet_score < doublet_thresh.get()]
         print(colored('Doublets found!', 'cyan'))
 
     # normalization for HVG calculation
@@ -1456,21 +1513,25 @@ def dge_betw_celltypes():
     dge_threshs = Toplevel()
     # lfc min
     lfc_min = StringVar()
+    lfc_min.set("0.15")
     Message(dge_threshs, text = 'Minimum log-fold change:', width=250).pack()
     lfc_entry = Entry(dge_threshs, textvariable = lfc_min)
     lfc_entry.pack()
     # bayes min
     bayes_min = StringVar()
+    bayes_min.set("2.5")
     Message(dge_threshs, text = 'Minimum bayes factor:', width=250).pack()
     bayes_entry = Entry(dge_threshs, textvariable = bayes_min)
     bayes_entry.pack()
     # non_zeros min
     non_zero = StringVar()
+    non_zero.set("0.2")
     Message(dge_threshs, text = 'Fraction non-zero counts [0.0-1.0]:', width=250).pack()
     non_zero_entry = Entry(dge_threshs, textvariable = non_zero)
     non_zero_entry.pack()
     # max no of markers
     markers_max = StringVar()
+    markers_max.set("5")
     Message(dge_threshs, text = 'Maximum number of markers per cluster:', width=250).pack()
     markers_entry = Entry(dge_threshs, textvariable = markers_max)
     markers_entry.pack()
@@ -1574,6 +1635,136 @@ def dge_betw_conditions():
     make_stats_window(x=dge_model)
     reset_dge2()
 
+
+# custom dge
+def custom_dge():
+    # get dge data
+    dge_data = adata_copy.copy()
+    custom_dge_window = Toplevel()
+    Label(custom_dge_window, text = "Specify subset of interest and comparison of interest:").grid(row = 0, column = 0)
+    # restrict ident
+    Label(custom_dge_window, text = "Restrict to specific sample:").grid(row = 1, column = 0)
+    restrict_ident_values = list(adata_copy.obs['orig.ident'].value_counts().index.values)
+    restrict_ident_var = StringVar()
+    restrict_ident_var.set("None")
+    restrict_box_ident = ttk.Combobox(custom_dge_window, values = restrict_ident_values, textvariable = restrict_ident_var)
+    restrict_box_ident.grid(row = 2, column = 0)
+    # restrict condition
+    Label(custom_dge_window, text = "Restrict to specific condition:").grid(row = 3, column = 0)
+    restrict_cond_values = list(adata_copy.obs['condition'].value_counts().index.values)
+    restrict_cond_var =  StringVar()
+    restrict_cond_var.set("None")
+    restrict_box_cond = ttk.Combobox(custom_dge_window, values = restrict_cond_values, textvariable = restrict_cond_var)
+    restrict_box_cond.grid(row = 4, column = 0)
+    # restrict study
+    Label(custom_dge_window, text = "Restrict to specific study:").grid(row = 5, column = 0)
+    restrict_study_values = list(adata_copy.obs['study'].value_counts().index.values)
+    restrict_study_var =  StringVar()
+    restrict_study_var.set("None")
+    restrict_box_study = ttk.Combobox(custom_dge_window, values = restrict_study_values, textvariable = restrict_study_var)
+    restrict_box_study.grid(row = 6, column = 0)
+    # restrict cell type
+    Label(custom_dge_window, text = "Restrict to specific cell type").grid(row = 7, column= 0)
+    if 'lineage' in adata_copy.obs.columns:
+        restrict_type_values = list(adata_copy.obs['lineage'].value_counts().index.values) + list(adata_copy.obs['predictions'].value_counts().index.values)
+    else:
+        restrict_type_values = list(adata_copy.obs['predictions'].value_counts().index.values)
+    restrict_type_var = StringVar()
+    restrict_type_var.set("None")
+    restrict_box_type = ttk.Combobox(custom_dge_window, values = restrict_type_values, textvariable = restrict_type_var)
+    restrict_box_type.grid(row = 8, column = 0)
+    # groupby
+    Label(custom_dge_window, text = "Choose grouping variable:").grid(row = 9, column = 0)
+    grouping_options = ['study', 'condition', 'predictions']
+    grouping_var =  StringVar()
+    grouping_var.set("condition")
+    grouping_box = ttk.Combobox(custom_dge_window, values = grouping_options, textvariable = grouping_var)
+    grouping_box.grid(row = 10, column = 0)
+    # wait var
+    wait_var = StringVar()
+    confirm_button = Button(custom_dge_window, text = "Confirm choices", command = lambda:[wait_var.set(1)])
+    confirm_button.grid(row=11, column = 0)
+    confirm_button.wait_variable(wait_var)
+    print("Starting DGE analysis...")
+    # check for choices
+    # idents
+    if restrict_ident_var.get() == "None":
+        restrict_ident_var = list(adata_copy.obs['orig.ident'].value_counts().index.values)
+    else:
+        restrict_ident_var = list([restrict_ident_var.get()])
+    # condition
+    if restrict_cond_var.get() == "None":
+        restrict_cond_var = list(adata_copy.obs['condition'].value_counts().index.values)
+    else:
+        restrict_cond_var = list([restrict_cond_var.get()])
+    # study
+    if restrict_study_var.get() == "None":
+        restrict_study_var = list(adata_copy.obs['study'].value_counts().index.values)
+    else:
+        restrict_study_var = list([restrict_study_var.get()])
+    # type
+    if restrict_type_var.get() == "None":
+        restrict_type_var = list(adata_copy.obs['predictions'].value_counts().index.values)
+    else:
+        restrict_type_var = list([restrict_type_var.get()])
+    # subset dge data
+    if (len(restrict_type_var)==1) & (restrict_type_var[0] in ['CD4 T cells', 'Myeloid cells', 'CD8 T cells', 'NK cells', 'pDCs', 'B cells']):
+        dge_data_sub = dge_data[(dge_data.obs['orig.ident'].isin(restrict_ident_var)) & (dge_data.obs['condition'].isin(restrict_cond_var)) & (dge_data.obs['study'].isin(restrict_study_var)) & (dge_data.obs['lineage'].isin(restrict_type_var))]
+    else:
+        dge_data_sub = dge_data[(dge_data.obs['orig.ident'].isin(restrict_ident_var)) & (dge_data.obs['condition'].isin(restrict_cond_var)) & (dge_data.obs['study'].isin(restrict_study_var)) & (dge_data.obs['predictions'].isin(restrict_type_var))]
+    # Perform DGE, if mapping was run, use vae_adata_red, from basic workflow use vae_adata
+    try:
+        dge_model = vae_adata_red.differential_expression(dge_data_sub, groupby = grouping_var.get())
+    except:
+        dge_model = vae_adata.differential_expression(dge_data_sub, groupby = grouping_var.get())
+    # get thresholds for markers
+    dge_threshs = Toplevel()
+    # lfc min
+    lfc_min = StringVar()
+    Message(dge_threshs, text = 'Minimum log-fold change:', width=250).pack()
+    lfc_entry = Entry(dge_threshs, textvariable = lfc_min)
+    lfc_entry.pack()
+    # bayes min
+    bayes_min = StringVar()
+    Message(dge_threshs, text = 'Minimum bayes factor:', width=250).pack()
+    bayes_entry = Entry(dge_threshs, textvariable = bayes_min)
+    bayes_entry.pack()
+    # non_zeros min
+    non_zero = StringVar()
+    Message(dge_threshs, text = 'Fraction non-zero counts [0.0-1.0]:', width=250).pack()
+    non_zero_entry = Entry(dge_threshs, textvariable = non_zero)
+    non_zero_entry.pack()
+    # max no of markers
+    markers_max = StringVar()
+    Message(dge_threshs, text = 'Maximum number of markers per cluster:', width=250).pack()
+    markers_entry = Entry(dge_threshs, textvariable = markers_max)
+    markers_entry.pack()
+    # wait for entry....
+    wait_var = IntVar()
+    def activate():
+        wait_var.set(1)
+    submit = Button(dge_threshs, text = "Apply thresholds", command = lambda:[activate(), dge_threshs.destroy()])
+    submit.pack()
+    submit.wait_variable(wait_var)
+    # get thresholds
+    lfc_min = float(lfc_min.get())
+    bayes_min = float(bayes_min.get())
+    markers_max = int(markers_max.get())
+    non_zero = float(non_zero.get())
+    # make marker list
+    markers = {}
+    cats = pd.Series(dge_data_sub.obs[grouping_var.get()].values, dtype="category").cat.categories
+    for i, c in enumerate(cats):
+        cid = "{} vs Rest".format(c)
+        cell_type_df = dge_model.loc[dge_model.comparison == cid]
+        cell_type_df = cell_type_df[cell_type_df.lfc_mean > lfc_min]
+        cell_type_df = cell_type_df[cell_type_df["bayes_factor"] > bayes_min]
+        cell_type_df = cell_type_df[cell_type_df["non_zeros_proportion1"] > non_zero]
+        markers[c] = cell_type_df.index.tolist()[:markers_max]
+    sc.pl.matrixplot(dge_data_sub, markers, cmap="inferno", groupby=grouping_var.get(), standard_scale='var', dendrogram=True, layer = 'scvi_norm')
+    make_stats_window(x=dge_model)
+    reset_dge2()
+
 # destroy subwindow
 def close(x):
     x.destroy()
@@ -1616,6 +1807,7 @@ def interface_dge():
         OptionMenu(interface_dge_window, subset_choice5, *options5, command = lambda _:[dge_betw_celltypes()]).pack(side=LEFT)
         # Dropdown for "Between condition"
         OptionMenu(interface_dge_window, subset_choice4, *options4, command = lambda _:[dge_betw_conditions()]).pack(side=LEFT)
+        Button(interface_dge_window, text = "Custom DGE", command = lambda:[custom_dge()]).pack(side=LEFT)
     except:
         print(colored('These subsets are only defined for the mapping workflow. Choose "All cells"'))
 

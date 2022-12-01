@@ -2,7 +2,11 @@
 #### A user interface-driven workflow for the annotation of cerebrospinal fluid leukocytes in scRNAseq datasets
 
 ## 1. What is annotateCSF?
+<<<<<<< HEAD
 annotateCSF or aCSF is a tool for annotation of scRNAseq datasets that contain cerebrospinal fluid (CSF) immune cells and wraps a user interface around a context-optimized workflow for scanpy (Wolf et al., 2018), scVI-tools (Lopez et al., 2018; Gayoso et al., 2022), and scANVI (Xu et al., 2021). The dataset that is used as a reference was compiled using several published CSF scRNAseq datasets and is described in detail in Ostkamp et al., Sci Transl Med (2022). It is also possible to conduct downstream exploration and analysis with UMAP plots, differential gene and -abundance analysis and so on. The aim of aCSF is to assist researchers with the analysis of their own datasets and to provide a reference atlas that is specifically suited for the annotation of CSF leukocytes unlike atlases based on peripheral blood that do not correctly reflect leukocyte heterogeneity of CSF. 
+=======
+annotateCSF or aCSF is a tool for annotation of scRNAseq datasets that contain cerebrospinal fluid (CSF) immune cells and wraps a user interface around a context-optimized workflow for scanpy (Wolf et al., 2018), scVI-tools (Lopez et al., 2018; Gayoso et al., 2022), and scANVI (Xu et al., 2021). The dataset that is used as a reference was compiled using several published CSF scRNAseq datasets and is described in detail in Ostkamp et al., Sci Transl Med (2022). It is also possible to conduct downstream exploration and analysis with UMAP plots, differential gene and -abundance analysis and so on. The aim of aCSF is to assist researchers with the analysis of their own datasets and to provide a reference atlas that is specifically suited for the annotation of CSF leukocytes unlike atlases based on peripheral blood that do not correctly reflect leukocyte heterogeneity of CSF.
+>>>>>>> test_branch_cw
 
 ## 2. Installation / Starting the software
 
@@ -68,10 +72,14 @@ As a start, you can choose the provided sample folder [10x_csf](test_data/10x_cs
 You can just choose the sample file [condition_csf.csv](test_data/condition_csf.tsv) in [test_data](test_data). The dataset consists of control-, PD (Parkinson's disease)- and LBD (Lewy body dementia) CSF samples.
 
 Metadata .tsv files for e.g. medical condition can also be exported from a Seurat object in R by typing:
-`write.table(seurat_object$condition, "your_condition.tsv"`.
+`write.table(seurat_object$condition, "your_condition.tsv")`.
 
 The file should have the following format:
+<<<<<<< HEAD
 | Condition			|	  |
+=======
+| Condition		|	  |
+>>>>>>> test_branch_cw
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Control |
 | AAACGGGAGGTTACCT-1_2	| Control |
@@ -90,43 +98,89 @@ The file shall have the following format:
 (4) Click on *"II. c. Choose idents.tsv"* and select a tsv-file containing a sample identifier for each sequence.
 Of course, you can again chose the provided sample [file](test_data/idents_csf.tsv).
 The file shall have the following format:
+<<<<<<< HEAD
 | Identity			|	  |
+=======
+| Idents		|	  |
+>>>>>>> test_branch_cw
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Donor_1 |
 | AAACGGGAGGTTACCT-1_2	| Donor_1 |
 | TTTGTCATCAGATAAG-1_22	| Donor_2 |
 | TTTGTCATCGGAGGTA-1_22	| Donor_2 |
 
-## 7. Run Calculation
+## 7. Map labels from reference- to query dataset
 When you have selected all necessary files, please click on *"III. Run mapping"*.
-This process may take a while for a rough analysis of the provided dataset.
+This process may take a while.
  
-![annotateCSF Main Window](doc/thresholds.png)
+First, you can choose whether you want to perform doublet exclusion using scrublet. If you choose so, this will be performed for each sample individually and you can then enter a meaningful threshold (0.2 - 0.3 is a common choice).  For basic quality control, you can choose to conduct QC for all samples at once or sample by sample. Next, a plot will be shown and you can select the desired QC thresholds for your analysis. Click on *"Apply thresholds"* to apply the threshold values and close the overview plots window to continue with the mapping process.
 
-For basic quality control, a plot will be shown and you can select the desired QC thresholds for your analysis. For a first approach, you can just keep the proposed threshold values. Click on *"Apply thresholds"* to apply the threshold values and close the overview plots window to continue with the mapping process.
+![annotateCSF Main Window](doc/thresholds.png)
 
 (**Caution:** The threshold selection window may open behind the overview plots on some systems and/or the *"Apply thresholds"* button may be out of the window’s borders. Please adjust the window’s size in this case.)
 
-After confirmation of the thresholds, the mapping process will be performed. This may take some time and depends on your system. Note that the scVI workflows used in aCSF support CUDA for Nvidia graphic cards which accelerates the process by a lot. A progress bar is shown in the console window so you can estimate how long the process will take.
+After confirmation of the thresholds, the mapping process will be performed. This may take some time and depends on your system. Note that the scVI workflows used in aCSF support CUDA for Nvidia graphic cards which accelerates the process by a lot. Progress bars will be shown in the console window, which will finish to 100% for first two progress bars (pre-training). The third progress bar may run until 100%, but could also finish earlier: This is intended and is meant to avoid overfitting. 
  
-## 8. Interpretation of the output
-After the mapping process has completed, you can generate a lot of plots.
+## 8. Visualization, analysis, and interpretation of the output
+After the mapping process has completed, you can perform further analyses and visualize your data.
 
 A good point to start would be:
-1. **UMAP predictions:**
+1. **UMAP plot:**
 
    Click on *"IV. a. Plot UMAP"* and select *"Do not subset"*.
-   You will be asked, for which gene you want to create a plot. Enter a gene name or *"predictions"* for generating a plot.
+   A window will open asking for specifications. In the simplest case, you select "predictions" in field **I.** and press plot. This generates a UMAP plot colored according to the predicted labels. If you want to add more information, e.g. gene expression, you can click the button "Add more info" (**II.**). Here, choose a gene symbol from the provided list or simply enter one yourself. You can also choose to plot more metadata, e.g. the medical conditions or the study identifier. You always have to make a choice and click confirm after choosing the desired information. Fields **III. - VI.** help you to customize the plot further, e. g. by selecting palettes or choosing the point size. There are also three further fields (**VII. - IX.**) that are meant for subsetting your data, in case you only want to view data from a certain sample or a certain condition. 
+
+   Note that you can also generate UMAP plots containing only cells from a chosen lineage, e.g. from CD4 T cells. In this case, you do not click "Do not subset" in the first place, but choose the desired lineage. This option will subset the data accordingly and compute a new UMAP for which also a model will need to be run (integration will be based on scVI or scanpy). This will take some time again, but usually provides a better view than simply using the UMAP coordinates generated from the main model. Below you can see an example for the kind of visualization that can be achieved:
+
+   ![annotateCSF Main Window](doc/UMAP_example.PNG)
+      
 
 2. **Quantification plot:**
 
    Click on *"IV. b. Plot quantifications"* and select *"Do not subset"*.
    You will see another window, which allows you to choose from several plots:
 
-![annotateCSF Main Window](doc/plots.png)
+   ![annotateCSF Main Window](doc/plots.png)
  
-Click on *"Box plot by celltype and condition"* for a quantifications box plot.
+Click on *"Boxplot by celltype and condition"* for a quantification box plot. You will be asked whether you want to save the quantification results, you can do this if you wish to perform any further analyses on this data. Boxplots by celltype and condition can also be customized and you will be asked whether you want to perform a basic statistical analysis using linear models. The results of this analysis can also be saved as spreadsheets.
 
-Several other plots will be available. Please feel free to experiment with all the various configuration options!
+Several other plots are also available. Please feel free to experiment with all the various configuration options!
 
-If you feel, some plots are missing or have some ideas to improve the software, please let us know!
+If you feel that some plots are missing or have some ideas to improve the software, please let us know!
+
+3. **Differential expression:**
+
+   To check for differentially expressed genes between cell types or between medical conditions, you can perform differential gene expression analysis. Simply choose the desired comparisons, this can also be freely customized using "Custom DGE". DGE analysis will then be performed and you will be asked to provide thresholds for plotting a heatmap.
+
+   ![annotateCSF Main Window](doc/DGE.PNG)
+
+## 9. Miscellaneous functions 
+
+For user convenience, we added some more functions:
+
+1. **Prepare data:**
+
+   This function is useful when you just obtained your 10X formatted output data from the cellranger software. aCSF expects all your data to be contained in a single folder holding the matrix.mtx, barcodes.tsv, and features.tsv/genes.tsv files, while metadata regarding sample identity etc. is provided via singular .tsv files. However, typically you have data from different samples and sequencing runs in seperate folders. In this case you can use the "Prepare data" function to combine the data from these folders and assign metadata values to each file, i.e. assign the sample identity, the medical condition, and the study belonging individually, and aCSF will combine this information into single metadata .tsv files, so they are compatible with the format that is required for aCSF.
+
+2. **Enrichment analysis:**
+
+   With this function you can load a .tsv files holding gene expression signatures and aCSF will perform scoring across cells based on a function from scanpy. The score will then also be available for plotting via the UMAP function. For instance, you may check whether cells classified as Th17 or Tfh CD4 T cells actually express the known marker genes of these cell types, or if the microglia-like population expresses microglia signature genes. Just upload a .tsv file containing a list of gene symbols and check it on the UMAP plot, the format should be as simple as:
+
+   |P2RY12      |
+   |------------|
+   |TMEM119	|
+   |SPP1	|
+   |TREM2	| 
+   |...		|
+
+An exemplary UMAP plot showing the enriched scores can be seen below:
+   ![annotateCSF Main Window](doc/enrichment_example.PNG)
+
+3. **scanpy/scVI workflow:**
+   
+   This function allows you to perform a basic scanpy/scVI workflow with user-defined parameters. This function is useful to explore data that is based on sample types other than CSF or when you suspect cell types to be present that are not part of the aCSF reference dataset from Ostkamp et al. (2022). You can perform a basic scVI integration analysis, compute clusters using the leiden algorithm and annotate clusters yourself. Many of the functions designed for analysis after the mapping workflow like UMAP plots etc. are also functional for the basic workflow. 
+
+## 10. Troubleshooting
+
+   Under construction... Please feel free to report any bug. This is still an early version and some functionalities may show unexpected behavior. 
+
