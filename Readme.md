@@ -136,7 +136,7 @@ Several other plots are also available. Please feel free to experiment with all 
 
 If you feel that some plots are missing or have some ideas to improve the software, please let us know!
 
-2. **Differential expression:**
+3. **Differential expression:**
 
    To check for differentially expressed genes between cell types or between medical conditions, you can perform differential gene expression analysis. Simply choose the desired comparisons, this can also be freely customized using "Custom DGE". DGE analysis will then be performed and you will be asked to provide thresholds for plotting a heatmap.
 
@@ -166,7 +166,7 @@ An exemplary UMAP plot showing the enriched scores can be seen below:
 
 3. **scanpy/scVI workflow:**
    
-   This function allows you to perform a basic scanpy/scVI workflow with user-defined parameters. This function is useful to explore data that is based on sample types other than CSF or when you suspect cell types to be present that are not part of the aCSF reference dataset from Ostkamp et al. (2022). You can perform a basic scVI integration analysis, compute clusters using the leiden algorithm and annotate clusters yourself.  
+   This function allows you to perform a basic scanpy/scVI workflow with user-defined parameters. This function is useful to explore data that is based on sample types other than CSF or when you suspect cell types to be present that are not part of the aCSF reference dataset from Ostkamp et al. (2022). You can perform a basic scVI integration analysis, compute clusters using the leiden algorithm and annotate clusters yourself. Many of the functions designed for analysis after the mapping workflow like UMAP plots etc. are also functional for the basic workflow. 
 
 ## 10. Troubleshooting
 
