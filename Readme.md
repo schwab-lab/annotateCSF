@@ -101,9 +101,9 @@ The file shall have the following format:
 When you have selected all necessary files, please click on *"III. Run mapping"*.
 This process may take a while.
  
-![annotateCSF Main Window](doc/thresholds.png)
+First, you can choose whether you want to perform doublet exclusion using scrublet. If you choose so, this will be performed for each sample individually and you can then enter a meaningful threshold (0.2 - 0.3 is a common choice).  For basic quality control, you can choose to conduct QC for all samples at once or sample by sample. Next, a plot will be shown and you can select the desired QC thresholds for your analysis. Click on *"Apply thresholds"* to apply the threshold values and close the overview plots window to continue with the mapping process.
 
-First, you can choose whether you want to perform doublet exclusion using scrubet. If you choose so, this will be performed for each sample individually and you can then enter a meaningful threshold (0.2 - 0.3 is a common choice).  For basic quality control, you can choose to conduct QC for all samples at once or sample by sample. Next, a plot will be shown and you can select the desired QC thresholds for your analysis. Click on *"Apply thresholds"* to apply the threshold values and close the overview plots window to continue with the mapping process.
+![annotateCSF Main Window](doc/thresholds.png)
 
 (**Caution:** The threshold selection window may open behind the overview plots on some systems and/or the *"Apply thresholds"* button may be out of the window’s borders. Please adjust the window’s size in this case.)
 
@@ -120,7 +120,7 @@ A good point to start would be:
 
    Note that you can also generate UMAP plots containing only cells from a chosen lineage, e.g. from CD4 T cells. In this case, you do not click "Do not subset" in the first place, but choose the desired lineage. This option will subset the data accordingly and compute a new UMAP for which also a model will need to be run (integration will be based on scVI or scanpy). This will take some time again, but usually provides a better view than simply using the UMAP coordinates generated from the main model. Below you can see an example for the kind of visualization that can be achieved:
 
-![annotateCSF Main Window](doc/UMAP_example.png)
+![annotateCSF Main Window](doc/UMAP_example.PNG)
       
 
 2. **Quantification plot:**
@@ -154,7 +154,8 @@ For user convenience, we added some more functions:
 
    With this function you can load a .tsv files holding gene expression signatures and aCSF will perform scoring across cells based on a function from scanpy. The score will then also be available for plotting via the UMAP function. For instance, you may check whether cells classified as Th17 or Tfh CD4 T cells actually express the known marker genes of these cell types, or if the microglia-like population expresses microglia signature genes. Just upload a .tsv file containing a list of gene symbols and check it on the UMAP plot, the format should be as simple as:
 
-| P2RY12	|
+| P2RY12        |
+|---------------|
 | TMEM119	|
 | SPP1		|
 | TREM2		| 
@@ -164,8 +165,10 @@ An exemplary UMAP plot showing the enriched scores can be seen below:
 ![annotateCSF Main Window](doc/enrichment_example.PNG)
 
 3. **scanpy/scVI workflow:**
+   
    This function allows you to perform a basic scanpy/scVI workflow with user-defined parameters. This function is useful to explore data that is based on sample types other than CSF or when you suspect cell types to be present that are not part of the aCSF reference dataset from Ostkamp et al. (2022). You can perform a basic scVI integration analysis, compute clusters using the leiden algorithm and annotate clusters yourself.  
 
 ## 10. Troubleshooting
-Under construction...
+
+   Under construction... Please feel free to report any bug. This is still an early version and some functionalities may show unexpected behavior. 
 
