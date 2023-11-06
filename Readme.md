@@ -4,17 +4,17 @@
 ## 1. What is annotateCSF?
 annotateCSF or aCSF is a tool for annotation of scRNAseq datasets that contain cerebrospinal fluid (CSF) immune cells and wraps a user interface around a context-optimized workflow for scanpy (Wolf et al., 2018), scVI-tools (Lopez et al., 2018; Gayoso et al., 2022), and scANVI (Xu et al., 2021). The dataset that is used as a reference was compiled using several published CSF scRNAseq datasets and is described in detail in Ostkamp et al., Sci Transl Med (2022). It is also possible to conduct downstream exploration and analysis with UMAP plots, differential gene and -abundance analysis and so on. The aim of aCSF is to assist researchers with the analysis of their own datasets and to provide a reference atlas that is specifically suited for the annotation of CSF leukocytes unlike atlases based on peripheral blood that do not correctly reflect leukocyte heterogeneity of CSF. 
 
-## 2. Installation / Starting the software
+## 2. Installation / Starting the software (recommended for Windows)
 
-Our software is provided for Windows 10 and for Linux as a portable package. This package comes with all the required libraries already included and does not require any installation on your computer. In particular, your existing system configuration will not be changed at all.
+Our software is provided for Windows 10 as a portable package. This package comes with all the required libraries already included and does not require any installation on your computer. In particular, your existing system configuration will not be changed at all.
 
 The portable package should be usable on most standard systems. However it may not (fully) work with every system configuration. In case, you experience some error, please try running annotateCSF via the "manual way" (see paragraph 3).
 
-Please download the provided installation archive for your operating system from our Online Storage ([v1.0](https://uni-muenster.sciebo.de/s/X3BC6vNhuzEun6i?path=%2FannotateCSF_release)), unzip it with [7zip](https://www.7-zip.org/download.html) into a folder of your choice, and run the `run_aCSF` executable.
+Please download the provided installation archive for your operating system from our Online Storage ([v1.1a](https://uni-muenster.sciebo.de/s/X3BC6vNhuzEun6i?path=%2FannotateCSF_release)), unzip it with [7zip](https://www.7-zip.org/download.html) into a folder of your choice, and run the `run_aCSF` executable.
 
 Under Linux, we recommend to start `./run_aCSF` from a terminal rather than from your file browser, because otherwise you may not see annotateCSF's console output (status, error messages, etc).
 
-## 3. The manual way (alternative)
+## 3. The manual way (recommended for Linux / macOS)
 If you want to run the software on a different operating system (e.g. macOS), or customize the source code, then you need a Python 3.9 installation with some packages on your system.
 
 For this purpose, a startup script is provided which, when used for the first time, ensures that a virtual Python environment is set up, all required packages are downloaded and installed, and annotateCSF is started.
@@ -70,7 +70,7 @@ You can just choose the sample file [condition_csf.csv](test_data/condition_csf.
 Metadata .tsv files for e.g. medical condition can also be exported from a Seurat object in R by typing:
 `write.table(seurat_object$condition, "your_condition.tsv")`.
 
-The file should have the following format:
+The file should have the following format*:
 | Condition		|	  |
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Control |
@@ -79,7 +79,7 @@ The file should have the following format:
 | TTTGTCATCGGAGGTA-1_22	| PD	  |
 
 (3) (optional) In case, you have data from more than one study, click on *"II. b. Choose study.tsv"* and select a tsv-file, providing a study identifier for each sequence. You can later visualize this in UMAP plots and see whether the data has been well integrated with regard to the different studies.
-The file shall have the following format:
+The file shall have the following format*:
 | Study			|	 |
 |-----------------------|--------|
 | AAACCTGAGCATGGCA-1_2	| study1 |
@@ -89,13 +89,15 @@ The file shall have the following format:
 
 (4) Click on *"II. c. Choose idents.tsv"* and select a tsv-file containing a sample identifier for each sequence.
 Of course, you can again chose the provided sample [file](test_data/idents_csf.tsv).
-The file shall have the following format:
+The file shall have the following format*:
 | Idents		|	  |
 |-----------------------|---------|
 | AAACCTGAGCATGGCA-1_2	| Donor_1 |
 | AAACGGGAGGTTACCT-1_2	| Donor_1 |
 | TTTGTCATCAGATAAG-1_22	| Donor_2 |
 | TTTGTCATCGGAGGTA-1_22	| Donor_2 |
+
+* Please note, that in all tsv-files only ONE header column may be present! aCSF will not operate with two header columns.
 
 ## 7. Map labels from reference- to query dataset
 When you have selected all necessary files, please click on *"III. Run mapping"*.
