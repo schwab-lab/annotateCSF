@@ -97,7 +97,7 @@ The file shall have the following format*:
 | TTTGTCATCAGATAAG-1_22	| Donor_2 |
 | TTTGTCATCGGAGGTA-1_22	| Donor_2 |
 
-* Please note, that in all tsv-files only ONE header column may be present! aCSF will not operate with two header columns.
+(*) Please note, that in all tsv-files only ONE header column may be present! aCSF will not operate with two header columns.
 
 ## 7. Map labels from reference- to query dataset
 When you have selected all necessary files, please click on *"III. Run mapping"*.
